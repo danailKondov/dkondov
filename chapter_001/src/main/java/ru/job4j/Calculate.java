@@ -12,6 +12,6 @@ public class Calculate {
 	* @param args параметры запуска программы
 	*/
 	public static void main (String[] args) {
-		System.out.println("Hello, world!");
+		System.out.println("Hello World");
 	}
 }
