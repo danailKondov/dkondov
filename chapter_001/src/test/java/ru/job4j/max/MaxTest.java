@@ -20,6 +20,15 @@ public class MaxTest {
 		Max maxim = new Max();
 		int result = maxim.max(1, 2);
 		assertThat(result, is(2));
-}
+	}
 
+	/**
+	* Метод проверяет операцию сравнения с тремя числами.
+	**/
+	@Test
+	public void whenFirstLessSecondAndThird() {
+		Max maxim = new Max();
+		int result = maxim.max(1, 2, 3);
+		assertThat(result, is(3));
+	}
 }

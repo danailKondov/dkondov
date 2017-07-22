@@ -18,4 +18,14 @@ public class Max {
 		return result;
 	}
 
+/**
+* Операция сравнения.
+* @param first первое число для сравнения
+* @param second второе число для сравнения
+* @param third третье число для сравнения
+* @return возвращает наибольшее из трех чисел
+*/
+	public int max(int first, int second, int third) {
+		return max(max(first, second), third);
+	}
 }
