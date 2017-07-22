@@ -1,56 +1,56 @@
 package ru.job4j.calculator;
 
 /**
-* Class Класс для осуществления арифметических операций.
+* Class for arithmetic operations.
 * @since 21/07/2017
 * @version 1
 */
 public class Calculator {
 
 /**
-* В переменной сохраняется результат арифметических операций.
+* Result of operations.
 */
 	private double result;
 
 /**
-* Операция сложения.
-* @param first первое слагаемое
-* @param second второе слагаемое
+* Operation of addition.
+* @param first first argument
+* @param second second argument
 */
 	public void add(double first, double second) {
 		this.result = first + second;
 	}
 
 /**
-* Операция вычитания.
-* @param first уменьшаемое
-* @param second вычитаемое
+* Operation of subtraction.
+* @param first first argument
+* @param second second argument
 */
 	public void subtract(double first, double second) {
 		this.result = first - second;
 	}
 
 /**
-* Операция умножения.
-* @param first умножаемое
-* @param second множитель
+* Operation of multiplication.
+* @param first first argument
+* @param second second argument
 */
 	public void multiplicate(double first, double second) {
 		this.result = first * second;
 	}
 
 /**
-* Операция деления.
-* @param first делимое
-* @param second делитель
+* Operation of division.
+* @param first first argument
+* @param second second argument
 */
 	public void divide(double first, double second) {
 		this.result = first / second;
 	}
 
 /**
-* Метод возвращает результат математической операции.
-* @return результат операции
+* Method returns result of operations.
+* @return result
 */
 	public double getResult() {
 		return this.result;

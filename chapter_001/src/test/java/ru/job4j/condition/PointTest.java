@@ -6,19 +6,19 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 /**
-* Class Класс для проверки точки.
+* Class Р”Р»СЏ РїСЂРѕРІРµСЂРєРё С‚РѕС‡РєРё.
 * @since 21/07/2017
 * @version 1
 **/
 public class PointTest {
 
 	/**
-	* Метод тестирует операцию проверки нахождения точки на функции.
+	* РњРµС‚РѕРґ С‚РµСЃС‚РёСЂСѓРµС‚ РѕРїРµСЂР°С†РёСЋ РїСЂРѕРІРµСЂРєРё РЅР°С…РѕР¶РґРµРЅРёСЏ С‚РѕС‡РєРё РЅР° С„СѓРЅРєС†РёРё.
 	**/
 	@Test
 	public void whenPointMeetFunction() {
 		Point point = new Point(2, 4);
-		boolean result = point.is(2, 1);
+		boolean result = point.is(1, 2);
 		assertThat(result, is(true));
 	}
 }
