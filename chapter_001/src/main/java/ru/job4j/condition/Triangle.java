@@ -40,10 +40,11 @@ public class Triangle {
 	* @return площадь
 	**/
 	public double area() {
+		double area;
 
 		// проверка на условие возможности: нахождение всех точек на линии
 		if (a.is(b.getX(), b.getY()) && b.is(c.getX(), c.getY())) {
-			return 0D;
+			area = 0D;
 		}
 
 		// Вычисляем по формуле Герона через полупериметр
@@ -51,7 +52,7 @@ public class Triangle {
 		double ac = Math.sqrt(Math.pow(a.getX() - c.getX(), 2) + Math.pow(a.getY() - c.getY(), 2));
 		double bc = Math.sqrt(Math.pow(c.getX() - b.getX(), 2) + Math.pow(c.getY() - b.getY(), 2));
 		double halfPerimetr = (ab + ac + bc) / 2;
-		double area = Math.sqrt(halfPerimetr * (halfPerimetr - ab) * (halfPerimetr - ac) * (halfPerimetr - bc));
+		area = Math.sqrt(halfPerimetr * (halfPerimetr - ab) * (halfPerimetr - ac) * (halfPerimetr - bc));
 
 		return area;
 	}
