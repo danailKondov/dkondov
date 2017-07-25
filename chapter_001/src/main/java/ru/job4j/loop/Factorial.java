@@ -8,19 +8,12 @@ package ru.job4j.loop;
 public class Factorial {
 
 	/**
-	* Переменная, где храним результат вычислений.
-	**/
-	private int result = 1;
-
-	/**
 	* метод вычисляет факториал.
 	* @param n число, для которого вычисляется факториал
 	* @return значение факториала
 	**/
 	public int calc(int n) {
-		if (n == 0) {
-			return 1;
-		}
+		int result = 1;		
 		for (int i = 1; i <= n; i++) {
 			result *= i;
 		}
