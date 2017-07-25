@@ -17,23 +17,13 @@ public class Board {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				if (i % 2 == 0) {
-					if (j % 2 == 0) {
+					if ((i + j) % 2 == 0) {
 						sb.append("X");
 					} else {
 						sb.append(" ");
 					}
-				} else {
-					if (j % 2 == 0) {
-						sb.append(" ");
-					} else {
-						sb.append("X");
-					}
-				}
-				if (j == width - 1) {
-					sb.append(System.getProperty("line.separator"));
-				}
 			}
+			sb.append(System.getProperty("line.separator"));
 		}
 		return sb.toString();
 	}
