@@ -50,7 +50,6 @@ public class Point {
 	* @return логичекое значение
 	**/
 	public boolean is(int a, int b) {
-		boolean c = (this.y == (a * this.x) + b) ? true : false;
-		return c;
+		return this.y == a * this.x + b;
 	}
 }
