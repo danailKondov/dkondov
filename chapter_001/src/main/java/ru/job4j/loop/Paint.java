@@ -22,11 +22,9 @@ public class Paint {
 					sb.append("^");
 				} else {
 					sb.append(" ");
-				}
-				if (j == osnvanie - 1) {
-					sb.append(System.getProperty("line.separator"));
-				}
+				}				
 			}
+			sb.append(System.getProperty("line.separator"));
 		}
 		return sb.toString();
 	}
