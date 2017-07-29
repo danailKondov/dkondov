@@ -97,5 +97,14 @@ public class Item {
 		this.created = created;
 	}
 
+	/**
+	* Method for item output.
+	* @return string representaion of object
+	**/
+	@Override
+	public String toString() {
+		return "id: " + id + ",  name: " + name + ", description: " + desc;
+	}
+
 	// TODO: getter and setter for "comments", equals() and hashCode()?
 }
