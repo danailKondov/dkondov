@@ -15,6 +15,7 @@ public class ConsoleInput implements Input {
 	* @return answer
 	**/
 	public String ask(String question) {
+		System.out.println(question);
 		Scanner scanner = new Scanner(System.in);
 		return scanner.nextLine();
 	}

@@ -56,6 +56,13 @@ public class StartUI {
 			} else if (answer.equals("0")) {
 				String name = input.ask("Enter user name: ");
 				String description = input.ask("Enter description: ");
+				//String cr = input.ask("Enter time of creation: ");
+				//long created = 0L;
+				//try {
+				//	created = Long.parseLong(cr); // try-catch
+				//} catch (NumberFormatException e) {
+				//	e.printStackTrace();
+				//}
 				tracker.add(new Item(name, description, 130L));
 			} else if (answer.equals("1")) {
 				for (Item item : tracker.findAll()) {

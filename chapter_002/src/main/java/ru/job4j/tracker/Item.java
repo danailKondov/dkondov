@@ -33,6 +33,12 @@ public class Item {
 	private String[] comments;
 
 	/**
+	* Default constructor.
+	**/
+	public Item() {
+	}
+
+	/**
 	* Constructor with parametrs.
 	**/
 	public Item(String name, String desc, long created) {
