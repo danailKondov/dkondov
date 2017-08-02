@@ -37,12 +37,12 @@ public class StubInputTest {
 		Input input = new StubInput(new String[]{"1", "6"});
 		new StartUI(input, tracker).init();
 		String sep = System.getProperty("line.separator");
-		String menu = "0. Add new Item\n" + 
-			"1. Show all items\n" + 
-			"2. Edit item\n" + 
-			"3. Delete item\n" + 
-			"4. Find item by Id\n" + 
-			"5. Find items by name\n" + 
+		String menu = "0. Add new Item\r\n" + 
+			"1. Show all items\r\n" + 
+			"2. Edit item\r\n" + 
+			"3. Delete item\r\n" + 
+			"4. Find item by Id\r\n" + 
+			"5. Find items by name\r\n" + 
 			"6. Exit Program\n" + 
 			"Select:" + 
 			sep;
@@ -94,12 +94,12 @@ public class StubInputTest {
 		Input input = new StubInput(new String[]{"4", one.getID(), "6"});
 		new StartUI(input, tracker).init();
 		String sep = System.getProperty("line.separator");
-		String menu = "0. Add new Item\n" + 
-			"1. Show all items\n" + 
-			"2. Edit item\n" + 
-			"3. Delete item\n" + 
-			"4. Find item by Id\n" + 
-			"5. Find items by name\n" + 
+		String menu = "0. Add new Item\r\n" + 
+			"1. Show all items\r\n" + 
+			"2. Edit item\r\n" + 
+			"3. Delete item\r\n" + 
+			"4. Find item by Id\r\n" + 
+			"5. Find items by name\r\n" + 
 			"6. Exit Program\n" + 
 			"Select:" + 
 			sep;
@@ -124,12 +124,12 @@ public class StubInputTest {
 		Input input = new StubInput(new String[]{"5", "nameOne", "6"});
 		new StartUI(input, tracker).init();
 		String sep = System.getProperty("line.separator");
-		String menu = "0. Add new Item\n" + 
-			"1. Show all items\n" + 
-			"2. Edit item\n" + 
-			"3. Delete item\n" + 
-			"4. Find item by Id\n" + 
-			"5. Find items by name\n" + 
+		String menu = "0. Add new Item\r\n" + 
+			"1. Show all items\r\n" + 
+			"2. Edit item\r\n" + 
+			"3. Delete item\r\n" + 
+			"4. Find item by Id\r\n" + 
+			"5. Find items by name\r\n" + 
 			"6. Exit Program\n" + 
 			"Select:" + 
 			sep;
