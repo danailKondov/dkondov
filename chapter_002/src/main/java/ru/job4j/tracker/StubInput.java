@@ -28,10 +28,21 @@ public class StubInput implements Input {
 
 	/**
 	* Method for simulating asking questions to user.
-	* @param question
+	* @param question - question
 	* @return answer
 	**/
 	public String ask(String question) {
 		return answers[position++];
+	}
+
+	/**
+	 * Method for simulating asking questions to user.
+	 * @param question - question
+	 * @param range - range
+	 * @return number of option
+	 */
+	@Override
+	public int ask(String question, int[] range) {
+		return Integer.valueOf(answers[position++]);
 	}
 }

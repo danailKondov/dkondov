@@ -35,7 +35,7 @@ public class StartUI {
 	* Main method.
 	**/
 	public static void main(String[] args) {
-		Input consoleInput = new ConsoleInput();
+		Input consoleInput = new ValidateInput();
 		Tracker tracker = new Tracker();
 		new StartUI(consoleInput, tracker).init();
 	}
@@ -52,7 +52,7 @@ public class StartUI {
 			"6. Exit Program\n" + 
 			"Select:"
 			);
-			int key = Integer.valueOf(input.ask(""));
+			int key = Integer.valueOf(input.ask("", new int[] {0, 1, 2, 3, 4, 5, 6}));
 			if (key == EXIT) {
 				break;
 			}

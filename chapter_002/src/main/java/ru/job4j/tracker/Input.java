@@ -11,4 +11,9 @@ public interface Input {
 	* Method for asking questions.
 	**/
 	String ask(String question);
+
+	/**
+	 * Method for asking questions with int return.
+	 **/
+	int ask(String question, int[] range);
 }
