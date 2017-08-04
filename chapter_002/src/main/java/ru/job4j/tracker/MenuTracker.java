@@ -35,12 +35,12 @@ public class MenuTracker {
 	* Method fills user actions array.
 	**/
 	public void fillActions() {
-		actions[0] = new AddItem(); // this.new AddItem()?
-		actions[1] = new MenuTracker.ShowAllItems(); // static inner class
-		actions[2] = new EditItem();
-		actions[3] = new DeleteItem();
-		actions[4] = new FindItemByID();
-		actions[5] = new FindItemsByName(); // outer class in one faile
+		actions[0] = new AddItem("Add new Item", 0); // this.new AddItem()?
+		actions[1] = new MenuTracker.ShowAllItems("Show all items", 1); // static inner class
+		actions[2] = new EditItem("Edit item", 2);
+		actions[3] = new DeleteItem("Delete item", 3);
+		actions[4] = new FindItemByID("Find item by Id", 4);
+		actions[5] = new FindItemsByName("Find items by name", 5); // outer class in one file
 	}
 
 	/**
@@ -79,14 +79,21 @@ public class MenuTracker {
 	/**
 	* Add new item option functionality.
 	**/
-	private class AddItem implements UserAction {
+	private class AddItem extends BaseAction {
 
-		/**
+        /**
+         * Constructor with parameters.
+         **/
+        private AddItem(String name, int key) {
+            super(name, key);
+        }
+
+        /**
 		* Action identificator.
-		* @returns action id
+		* @return action id
 		**/
 		public int key() {
-			return 0;
+			return super.key;
 		}
 
 		/**
@@ -99,27 +106,26 @@ public class MenuTracker {
 			String description = input.ask("Enter description: ");
 			tracker.add(new Item(name, description, 130L));
 		}
-
-		/**
-		* Information about action.
-		* @returns info about action
-		**/
-		public String info() {
-			return String.format("%s. Add new Item", key());
-		}
 	}
 
 	/**
 	* Show all items option functionality.
 	**/
-	private static class ShowAllItems implements UserAction {
+	private static class ShowAllItems extends BaseAction {
 
-		/**
+        /**
+         * Constructor with parameters.
+         **/
+        private ShowAllItems(String name, int key) {
+            super(name, key);
+        }
+
+        /**
 		* Action identificator.
-		* @returns action id
+		* @return action id
 		**/
 		public int key() {
-			return 1;
+			return super.key;
 		}
 
 		/**
@@ -132,27 +138,26 @@ public class MenuTracker {
 				System.out.println(item);
 			}
 		}
-
-		/**
-		* Information about action.
-		* @returns info about action
-		**/
-		public String info() {
-			return String.format("%s. Show all items", key());
-		}
 	}
 
 	/**
 	* Edit item option functionality.
 	**/
-	private class EditItem implements UserAction {
+	private class EditItem extends BaseAction {
 
-		/**
+        /**
+         * Constructor with parameters.
+         **/
+        private EditItem(String name, int key) {
+            super(name, key);
+        }
+
+        /**
 		* Action identificator.
-		* @returns action id
+		* @return action id
 		**/
 		public int key() {
-			return 2;
+			return super.key;
 		}
 
 		/**
@@ -169,27 +174,26 @@ public class MenuTracker {
 			newItem.setID(id);
 			tracker.update(newItem);
 		}
-
-		/**
-		* Information about action.
-		* @returns info about action
-		**/
-		public String info() {
-			return String.format("%s. Edit item", key());
-		}
 	}
 
 	/**
 	* Delete item option functionality.
 	**/
-	private class DeleteItem implements UserAction {
+	private class DeleteItem extends BaseAction {
 
-		/**
+        /**
+         * Constructor with parameters.
+         **/
+        private DeleteItem(String name, int key) {
+            super(name, key);
+        }
+
+        /**
 		* Action identificator.
-		* @returns action id
+		* @return action id
 		**/
 		public int key() {
-			return 3;
+			return super.key;
 		}
 
 		/**
@@ -201,27 +205,26 @@ public class MenuTracker {
 			String id = input.ask("Enter id: ");
 			tracker.delete(tracker.findByID(id));
 		}
-
-		/**
-		* Information about action.
-		* @returns info about action
-		**/
-		public String info() {
-			return String.format("%s. Delete item", key());
-		}
 	}
 
 	/**
 	* Find item by ID option functionality.
 	**/
-	private class FindItemByID implements UserAction {
+	private class FindItemByID extends BaseAction {
 
-		/**
+        /**
+         * Constructor with parameters.
+         **/
+        private FindItemByID(String name, int key) {
+            super(name, key);
+        }
+
+        /**
 		* Action identificator.
-		* @returns action id
+		* @return action id
 		**/
 		public int key() {
-			return 4;
+			return super.key;
 		}
 
 		/**
@@ -233,30 +236,27 @@ public class MenuTracker {
 			String id = input.ask("Enter id: ");
 			System.out.println(tracker.findByID(id));
 		}
-
-		/**
-		* Information about action.
-		* @returns info about action
-		**/
-		public String info() {
-			return String.format("%s. Find item by Id", key());
-		}
 	}
-
-	
 }
 
 /**
 * Find items by name option functionality.
 **/
-class FindItemsByName implements UserAction {
+class FindItemsByName extends BaseAction {
 
-	/**
+    /**
+     * Constructor with parameters.
+     **/
+    public FindItemsByName(String name, int key) {
+        super(name, key);
+    }
+
+    /**
 	* Action identificator.
-	* @returns action id
+	* @return action id
 	**/
 	public int key() {
-		return 5;
+		return super.key;
 	}
 
 	/**
@@ -269,13 +269,5 @@ class FindItemsByName implements UserAction {
 		for (Item item : tracker.findByName(name)) {
 			System.out.println(item);
 		}
-	}
-
-	/**
-	* Information about action.
-	* @returns info about action
-	**/
-	public String info() {
-		return String.format("%s. Find items by name", key());
 	}
 }
