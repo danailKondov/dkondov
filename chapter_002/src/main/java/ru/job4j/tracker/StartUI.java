@@ -24,6 +24,11 @@ public class StartUI {
 	private static final int EXIT = 6;
 
 	/**
+	 * Array of menu options.
+	 */
+	private int[] menuOptions;
+
+	/**
 	* Constructor with parameters.
 	**/
 	public StartUI(Input input, Tracker tracker) {
@@ -46,13 +51,14 @@ public class StartUI {
 	public void init() {
 		MenuTracker menu = new MenuTracker(input, tracker);
 		menu.fillActions();
+		menuOptions = menu.keys();
 		while(true) {
 			menu.show();
 			System.out.println(
 			"6. Exit Program\n" + 
 			"Select:"
 			);
-			int key = Integer.valueOf(input.ask("", new int[] {0, 1, 2, 3, 4, 5, 6}));
+			int key = Integer.valueOf(input.ask("", menuOptions));
 			if (key == EXIT) {
 				break;
 			}

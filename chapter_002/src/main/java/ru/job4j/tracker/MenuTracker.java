@@ -32,7 +32,7 @@ public class MenuTracker {
 	}
 
 	/**
-	* Metod fills user actions array.
+	* Method fills user actions array.
 	**/
 	public void fillActions() {
 		actions[0] = new AddItem(); // this.new AddItem()?
@@ -41,6 +41,19 @@ public class MenuTracker {
 		actions[3] = new DeleteItem();
 		actions[4] = new FindItemByID();
 		actions[5] = new FindItemsByName(); // outer class in one faile
+	}
+
+	/**
+	 * Method returns numbers of menu options
+	 * @return array of menu options
+	 */
+	public int[] keys() {
+		// +1 for "Exit" option
+		int[] result = new int[actions.length + 1];
+		for (int i = 0; i < actions.length + 1; i++) {
+			result[i] = i;
+		}
+		return result;
 	}
 
 	/**
