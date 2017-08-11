@@ -3,6 +3,7 @@ package ru.job4j.conversion;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -39,6 +40,23 @@ public class ConvertListTest {
         }
         int[][] result = convertList.toArray(source, 3);
         int[][] expected = {{1, 2, 3}, {4, 5, 6}, {7, 0, 0}};
+        assertThat(result, is(expected));
+    }
+
+    /**
+     * Test for list of arrays conversion to list of integers.
+     */
+    @Test
+    public void convertToListOfIntegersListOfArraysTest() {
+        ConvertList convertList = new ConvertList();
+        List<int[]> source = new ArrayList<>();
+        source.add(new int[]{1, 2});
+        source.add(new int[]{3, 4, 5, 6});
+        List<Integer> result = convertList.convert(source);
+        List<Integer> expected = new ArrayList<>();
+        for (int i = 1; i < 7; i++) {
+            expected.add(i);
+        }
         assertThat(result, is(expected));
     }
 
