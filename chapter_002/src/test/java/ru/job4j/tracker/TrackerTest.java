@@ -2,6 +2,8 @@ package ru.job4j.tracker;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -20,7 +22,7 @@ public class TrackerTest {
 		Tracker tracker = new Tracker();
 		Item item = new Item("test1", "testDescription", 123L);
 		tracker.add(item);
-		assertThat(tracker.findAll()[0], is(item));
+		assertThat(tracker.findAll().get(0), is(item));
 	}
 
 	/**
@@ -54,8 +56,8 @@ public class TrackerTest {
 		Item item2 = new Item("test4", "testDescription5", 127L);
 		tracker.add(item);
 		tracker.add(item2);
-		assertThat(tracker.findByName("test4")[0], is(item));
-		assertThat(tracker.findByName("test4")[1], is(item2));
+		assertThat(tracker.findByName("test4").get(0), is(item));
+		assertThat(tracker.findByName("test4").get(1), is(item2));
 	}
 
 	/**
@@ -69,11 +71,11 @@ public class TrackerTest {
 		tracker.add(new Item("test3", "testDescription3", 125L));
 		Item item = new Item("test4", "testDescription4", 126L);
 		tracker.add(item);
-		int numberOfItemsBefore = tracker.findAll().length;
+		int numberOfItemsBefore = tracker.findAll().size();
 		tracker.delete(item);
-		int numberOfItemsAfter = tracker.findAll().length;
-		Item[] result = tracker.findByName("test4");
-		Item[] expected = null;
+		int numberOfItemsAfter = tracker.findAll().size();
+		ArrayList<Item> result = tracker.findByName("test4");
+		ArrayList<Item> expected = new ArrayList<>();
 		assertThat(result, is(expected));
 		assertThat(numberOfItemsAfter, is(numberOfItemsBefore - 1));
 	}

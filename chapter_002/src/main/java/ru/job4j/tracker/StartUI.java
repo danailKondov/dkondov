@@ -1,6 +1,8 @@
 package ru.job4j.tracker;
 
 
+import java.util.ArrayList;
+
 /**
 * Class is start point with main method.
 * @since 29/07/2017
@@ -26,7 +28,7 @@ public class StartUI {
 	/**
 	 * Array of menu options.
 	 */
-	private int[] menuOptions;
+	private ArrayList<Integer> menuOptions;
 
 	/**
 	* Constructor with parameters.

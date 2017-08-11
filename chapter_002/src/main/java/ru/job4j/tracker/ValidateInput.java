@@ -1,5 +1,7 @@
 package ru.job4j.tracker;
 
+import java.util.ArrayList;
+
 /**
 * Class for input/output operations.
 * @since 04/08/2017
@@ -13,7 +15,7 @@ public class ValidateInput extends ConsoleInput {
      * @return number of menu option
      */
     @Override
-    public int ask(String question, int[] range) {
+    public int ask(String question, ArrayList<Integer> range) {
         while(true) {
             try {
                 return super.ask(question,range);

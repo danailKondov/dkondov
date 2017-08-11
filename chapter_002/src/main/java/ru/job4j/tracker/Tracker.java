@@ -10,14 +10,9 @@ import java.util.*;
 public class Tracker {
 
 	/**
-	* variable represents array of items.
+	* variable represents list of items.
 	**/
-	private Item[] items = new Item[100];
-
-	/**
-	* variable represents number of items.
-	**/
-	private int numberOfItems = 0;
+	private ArrayList<Item> items = new ArrayList<>();
 
 	/**
 	* variable for randomizer.
@@ -36,17 +31,9 @@ public class Tracker {
 	* @return item
 	**/
 	public Item add(Item item) {
-		if (numberOfItems < items.length && item != null) {
+		if (item != null) {
 			item.setID(generateID());
-			items[numberOfItems] = item;
-			numberOfItems++;
-		} else {
-			// expanding Item type array and repeating add operation
-			// if array is overloaded
-			Item[] newItems = new Item[items.length + 100];
-			System.arraycopy(items, 0, newItems, 0, items.length);
-			items = newItems;
-			add(item);
+			items.add(item);
 		}
 		return item;
 	}
@@ -64,9 +51,9 @@ public class Tracker {
 	* @param item new item to update
 	**/
 	public void update(Item item) {
-		for (int i = 0; i < numberOfItems; i++) {
-			if (items[i].getID().equals(item.getID())) {
-				items[i] = item;
+		for (int i = 0; i < items.size(); i++) {
+			if (items.get(i).getID().equals(item.getID())) {
+				items.set(i, item);
 				break;
 			}
 		}
@@ -77,14 +64,9 @@ public class Tracker {
 	* @param item new item to remove
 	**/
 	public void delete(Item item) {
-		for (int i = 0; i < numberOfItems; i++) {
-			if (items[i].getID().equals(item.getID())) {
-				// moving array to the left
-				Item[] helper = new Item[numberOfItems - i - 1];
-				System.arraycopy(items, i + 1, helper, 0, numberOfItems - i - 1);
-				System.arraycopy(helper, 0, items, i, numberOfItems - i - 1);
-				items[numberOfItems - 1] = null;
-				numberOfItems--;
+		for (int i = 0; i < items.size(); i++) {
+			if (items.get(i).getID().equals(item.getID())) {
+				items.remove(i);
 				break;
 			}
 		}
@@ -94,32 +76,19 @@ public class Tracker {
 	* Method returns no null array .
 	* @return result array
 	**/
-	public Item[] findAll() {
-		Item[] result = new Item[numberOfItems];
-		System.arraycopy(items, 0, result, 0, numberOfItems);
-		return result;
+	public ArrayList<Item> findAll() {
+		return items;
 	}
 
 	/**
 	* Method returns array by name.
 	* @return result array
 	**/
-	public Item[] findByName(String key) {
-		int count = 0;
+	public ArrayList<Item> findByName(String key) {
+		ArrayList<Item> result = new ArrayList<>();
 		for (Item item : items) {
-			if (item != null && item.getName().equals(key)) {
-				count++;
-			}
-		}
-		Item[] result = null;
-		if (count > 0) {
-			result = new Item[count];
-			int i = 0;
-			for (Item item : items) {
-				if (item != null && item.getName().equals(key)) {
-					result[i] = item;
-					i++;
-				}
+			if (item.getName().equals(key)) {
+				result.add(item);
 			}
 		}
 		return result;
@@ -132,7 +101,7 @@ public class Tracker {
 	public Item findByID(String id) {
 		Item result = null;
 		for (Item item : items) {
-			if (item != null && item.getID().equals(id)) {
+			if (item.getID().equals(id)) {
 				result = item;
 				break;
 			}

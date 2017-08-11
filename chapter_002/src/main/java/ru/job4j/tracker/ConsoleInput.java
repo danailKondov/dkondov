@@ -27,7 +27,7 @@ public class ConsoleInput implements Input {
 	 * @return number of menu option
 	 */
 	@Override
-	public int ask(String question, int[] range) {
+	public int ask(String question, ArrayList<Integer> range) {
 		int key = Integer.valueOf(ask(question));
 		for (int value :
 				range) {

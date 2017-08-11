@@ -1,6 +1,8 @@
 package ru.job4j.tracker;
 
 
+import java.util.ArrayList;
+
 /**
 * Menu tracker.
 * @since 02/07/2017
@@ -21,7 +23,7 @@ public class MenuTracker {
 	/**
 	* User actions array.
 	**/
-	private UserAction[] actions = new UserAction[6];
+	private ArrayList<UserAction> actions = new ArrayList<>();
 
 	/**
 	* Constructor with parameters.
@@ -35,23 +37,23 @@ public class MenuTracker {
 	* Method fills user actions array.
 	**/
 	public void fillActions() {
-		actions[0] = new AddItem("Add new Item", 0); // this.new AddItem()?
-		actions[1] = new MenuTracker.ShowAllItems("Show all items", 1); // static inner class
-		actions[2] = new EditItem("Edit item", 2);
-		actions[3] = new DeleteItem("Delete item", 3);
-		actions[4] = new FindItemByID("Find item by Id", 4);
-		actions[5] = new FindItemsByName("Find items by name", 5); // outer class in one file
+		actions.add(new AddItem("Add new Item", 0)); // this.new AddItem()?
+		actions.add(new MenuTracker.ShowAllItems("Show all items", 1)); // static inner class
+		actions.add(new EditItem("Edit item", 2));
+		actions.add(new DeleteItem("Delete item", 3));
+		actions.add(new FindItemByID("Find item by Id", 4));
+		actions.add(new FindItemsByName("Find items by name", 5)); // outer class in one file
 	}
 
 	/**
 	 * Method returns numbers of menu options
-	 * @return array of menu options
+	 * @return list of menu options
 	 */
-	public int[] keys() {
+	public ArrayList<Integer> keys() {
 		// +1 for "Exit" option
-		int[] result = new int[actions.length + 1];
-		for (int i = 0; i < actions.length + 1; i++) {
-			result[i] = i;
+		ArrayList<Integer> result = new ArrayList<>();
+		for (int i = 0; i < actions.size() + 1; i++) {
+			result.add(i);
 		}
 		return result;
 	}
@@ -64,7 +66,7 @@ public class MenuTracker {
 		// Для внутреннего класса явная передача параметров
 		// типа actions[key].execute(input, tracker) не нужна: внутренний
 		// класс имеет доступ к полям внешнего?
-		actions[key].execute(input, tracker); 
+		actions.get(key).execute(input, tracker);
 	}
 
 	/**
@@ -89,7 +91,7 @@ public class MenuTracker {
         }
 
         /**
-		* Action identificator.
+		* Action identification.
 		* @return action id
 		**/
 		public int key() {

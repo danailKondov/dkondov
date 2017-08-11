@@ -1,6 +1,8 @@
 package ru.job4j.tracker;
 
 
+import java.util.ArrayList;
+
 /**
 * Class for input/output testing.
 * @since 30/07/2017
@@ -42,7 +44,7 @@ public class StubInput implements Input {
 	 * @return number of option
 	 */
 	@Override
-	public int ask(String question, int[] range) {
+	public int ask(String question, ArrayList<Integer> range) {
 		return Integer.valueOf(answers[position++]);
 	}
 }
