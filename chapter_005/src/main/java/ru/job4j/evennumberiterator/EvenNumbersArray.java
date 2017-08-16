@@ -1,6 +1,7 @@
 package ru.job4j.evennumberiterator;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Class holding array with numbers to iterate.
@@ -32,6 +33,10 @@ public class EvenNumbersArray implements Iterable<Integer>{
         return new Iterator<Integer>() {
             private int pointer = 0;
 
+            /**
+             * Check is there next even element in this array.
+             * @return result
+             */
             @Override
             public boolean hasNext() {
                 boolean result = false;
@@ -41,9 +46,17 @@ public class EvenNumbersArray implements Iterable<Integer>{
                 return result;
             }
 
+            /**
+             * Return element and move pointer further.
+             * @return element
+             */
             @Override
             public Integer next() {
-                return source[pointer++];
+                int i;
+                if ((i = source[pointer++]) % 2 == 0) {
+                    return i;
+                }
+                throw new NoSuchElementException();
             }
         };
     }
