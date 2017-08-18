@@ -2,6 +2,8 @@ package ru.job4j.genericsimplearray;
 
 import org.junit.Test;
 
+import java.util.Iterator;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -30,6 +32,28 @@ public class SimpleArrayTest {
         simpleArray.delete(2);
         result = null;
         assertThat(simpleArray.get(2), is(result));
+    }
+
+
+    /**
+     * Test simple array iterator.
+     */
+    @Test
+    public void simpleArrayIteratorTest() {
+        SimpleArray<String> simpleArray = new SimpleArray<>(10);
+        simpleArray.add("test1");
+        simpleArray.add("test2");
+        simpleArray.add("test3");
+        simpleArray.add("test4");
+        Iterator<String> it = simpleArray.iterator();
+        String result = "";
+        it.next();
+        it.remove();
+        while(it.hasNext()) {
+            result += it.next();
+        }
+        String expected = "test3test4";
+        assertThat(result, is(expected));
     }
 
 }
