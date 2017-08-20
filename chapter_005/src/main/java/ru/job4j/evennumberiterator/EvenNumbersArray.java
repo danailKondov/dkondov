@@ -40,8 +40,10 @@ public class EvenNumbersArray implements Iterable<Integer>{
             @Override
             public boolean hasNext() {
                 boolean result = false;
-                if(pointer != source.length && source[pointer]%2 == 0) {
-                    return true;
+                for (int i = pointer; i < source.length; i++) {
+                    if (source[i] % 2 == 0) {
+                        result = true;
+                    }
                 }
                 return result;
             }
@@ -52,9 +54,12 @@ public class EvenNumbersArray implements Iterable<Integer>{
              */
             @Override
             public Integer next() {
-                int i;
-                if ((i = source[pointer++]) % 2 == 0) {
-                    return i;
+                int result;
+                for (int j = pointer; j < source.length; j++) {
+                    if((result = source[j]) % 2 == 0) {
+                        pointer = ++j;
+                        return result;
+                    }
                 }
                 throw new NoSuchElementException();
             }

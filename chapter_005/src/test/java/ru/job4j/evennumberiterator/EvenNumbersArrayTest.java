@@ -17,12 +17,12 @@ public class EvenNumbersArrayTest {
      */
     @Test
     public void evenNubersIteratorTest() {
-        EvenNumbersArray evenNumbersArray = new EvenNumbersArray(new int[] {66, 446, 4, 2, 1, 1});
+        EvenNumbersArray evenNumbersArray = new EvenNumbersArray(new int[] {66, 446, 4, 2, 1, 1, 2, 1});
         String result = "";
         for (int i : evenNumbersArray) {
             result += i;
         }
-        String expected = "6644642";
+        String expected = "66446422";
         assertThat(result, is (expected));
     }
 
