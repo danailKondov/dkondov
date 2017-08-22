@@ -19,6 +19,11 @@ public class Link<E> {
     public Link<E> next;
 
     /**
+     * Connection to previous link.
+     */
+    public Link<E> previous;
+
+    /**
      * Constructor.
      *
      * @param data - data to store
@@ -26,5 +31,6 @@ public class Link<E> {
     public Link(E data) {
         this.data = data;
         next = null;
+        previous = null;
     }
 }

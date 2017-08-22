@@ -48,4 +48,48 @@ public class SimpleLinkedListTest {
         assertThat(result, is(expected));
     }
 
+    /**
+     * Test for remove method.
+     */
+    @Test
+    public void removeTest() {
+        SimpleLinkedList<String> simpleLinkedList = new SimpleLinkedList<>();
+        simpleLinkedList.add("one");
+        simpleLinkedList.add("two");
+        simpleLinkedList.add("three");
+        simpleLinkedList.add("four");
+        simpleLinkedList.remove();
+        String result = "";
+        for (String s : simpleLinkedList) {
+            result += s + " ";
+        }
+        String expected = "one two three ";
+        assertThat(result, is(expected));
+    }
+
+    /**
+     * Test for remove with index method.
+     */
+    @Test
+    public void removeWithIndexTest() {
+        SimpleLinkedList<String> simpleLinkedList = new SimpleLinkedList<>();
+        simpleLinkedList.add("one");
+        simpleLinkedList.add("two");
+        simpleLinkedList.add("three");
+        simpleLinkedList.add("four");
+        simpleLinkedList.add("five");
+        simpleLinkedList.add("six");
+        String removed = "";
+        removed += simpleLinkedList.remove(2); // three
+        removed += simpleLinkedList.remove(4); // six
+        removed += simpleLinkedList.remove(0); // one
+        String result = "";
+        for (String s : simpleLinkedList) {
+            result += s + " ";
+        }
+        String expected = "two four five ";
+        assertThat(result, is(expected));
+        assertThat(removed, is("threesixone"));
+    }
+
 }
