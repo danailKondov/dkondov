@@ -2,6 +2,7 @@ package ru.job4j.simpleset;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * Class simple set.
@@ -27,6 +28,9 @@ public class SimpleSet<E> implements Iterable<E>{
      */
     public void add(E e) {
 
+        // проверяем аргумент на null
+        Objects.requireNonNull(e);
+
         // увеличиваем массив при переполнении
         if(pointer == container.length) {
             Object[] newContainer = new Object[container.length + container.length / 2];
@@ -38,14 +42,26 @@ public class SimpleSet<E> implements Iterable<E>{
         if (pointer == 0) {
             container[pointer++] = e;
         } else {
-            for (int i = 0; i < pointer; i++) {
-                if (container[i].equals(e)) {
-                    return;
-                }
+            if (!contains(e)) {
+                container[pointer++] = e;
             }
-            container[pointer++] = e;
         }
 
+    }
+
+    /**
+     * Tests is there element in this set.
+     * @param e element
+     * @return true if set contains this element
+     */
+    public boolean contains(E e) {
+        boolean result = false;
+        for (E element : this) {
+            if(element.equals(e)) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     /**
