@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
  * @since 25/08/2017
  * @version 1
  */
-public class SimpleSetOnLinkedList<E> implements Iterable<E> {
+public class SimpleSetOnLinkedList<E> implements Iterable<E>, SimpleSets<E> {
 
     /**
      * First element.
@@ -29,20 +29,25 @@ public class SimpleSetOnLinkedList<E> implements Iterable<E> {
     /**
      * Add new element to the end of list.
      * @param e - new element
+     * @return false if operation is unsuccessful
      */
-    public void add(E e) {
+    public boolean add(E e) {
+        boolean result = false;
         if(!contains(e)) {
             if(size == 0) {
                 Node<E> newNode = new Node<>(e);
                 first = last = newNode;
                 size++;
+                result = true;
             } else {
                 Node<E> newNode = new Node<>(e);
                 last.next = newNode;
                 last = newNode;
                 size++;
+                result = true;
             }
         }
+        return result;
     }
 
     /**

@@ -10,12 +10,12 @@ import java.util.Objects;
  * @since 24/08/2017
  * @version 1
  */
-public class SimpleSet<E> implements Iterable<E>{
+public class SimpleSet<E> implements Iterable<E>, SimpleSets<E>{
 
     /**
      * Contains elements.
      */
-    private Object[] container = new Object[10];
+    private Object[] container = new Object[50000];
 
     /**
      * Points to last element.
@@ -25,8 +25,9 @@ public class SimpleSet<E> implements Iterable<E>{
     /**
      * Add new element.
      * @param e - value to add
+     * @return false if operation is unsuccessful
      */
-    public void add(E e) {
+    public boolean add(E e) {
 
         // проверяем аргумент на null
         Objects.requireNonNull(e);
@@ -38,15 +39,18 @@ public class SimpleSet<E> implements Iterable<E>{
             container = newContainer;
         }
 
+        boolean result = false;
         // проверяем на совпадения и добавляем элемент
         if (pointer == 0) {
             container[pointer++] = e;
+            result = true;
         } else {
             if (!contains(e)) {
                 container[pointer++] = e;
+                result = true;
             }
         }
-
+        return result;
     }
 
     /**
