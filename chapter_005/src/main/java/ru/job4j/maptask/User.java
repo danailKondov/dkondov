@@ -56,6 +56,16 @@ public class User {
 //    public void map() {   // не работает из-за наличия конструктора с параметрами
 //    }
 
+
+    /**
+     * Hash code.
+     * @return hash code
+     */
+    @Override
+    public int hashCode() {
+        return name.hashCode() + children * 31 + birthday.hashCode();
+    }
+
     public static void main(String[] args) {
         User one = new User("Masha", 2, 1980, 9, 15);
         User two = new User("Masha", 2, 1980, 9, 15);
