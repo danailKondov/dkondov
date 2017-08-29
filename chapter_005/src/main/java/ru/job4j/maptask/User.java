@@ -1,8 +1,5 @@
 package ru.job4j.maptask;
 
-//import org.junit.jupiter.api.Test;
-
-import org.junit.Test;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -46,16 +43,22 @@ public class User {
         this.birthday = new GregorianCalendar(birthYear, birthMonth, birthDayOfMonth);
     }
 
-//    /**
-//     * Default constructor.
-//     */
-//    public User() {
-//    }
-//
-//    @Test
-//    public void map() {   // не работает из-за наличия конструктора с параметрами
-//    }
+    /**
+     * Tests for equality.
+     * @param obj to test
+     * @return true if objects equal
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
 
+        User other = (User) obj;
+
+        if (name != null? !name.equals(other.name) : other.name != null) return false;
+        if (birthday != null? !birthday.equals(other.birthday) : other.birthday != null) return false;
+        return children == other.children;
+    }
 
     /**
      * Hash code.
