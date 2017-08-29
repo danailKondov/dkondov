@@ -25,11 +25,11 @@ public class QueueTest {
         queue.add("Four");
         queue.add("Five");
         queue.add("Six");
-        String result = queue.poll();
+        String result = queue.element();
         assertThat(result, is("One"));
         result = "";
         while(!queue.isEmpty()) {
-            result += queue.remove();
+            result += queue.poll();
         }
         assertThat(result, is("OneTwoThreeFourFiveSix"));
     }

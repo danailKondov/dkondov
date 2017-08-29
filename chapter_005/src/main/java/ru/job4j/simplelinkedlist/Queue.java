@@ -28,7 +28,7 @@ public class Queue<E> {
      * @return the head of this queue
      * @throws NoSuchElementException if this queue is empty
      */
-    public E remove() {
+    public E poll() {
         return container.remove(0);
     }
 
@@ -37,7 +37,7 @@ public class Queue<E> {
      * @return the head of this queue
      * @throws NoSuchElementException if this queue is empty
      */
-    public E poll() {
+    public E element() {
         try {
             return container.get(0);
         } catch (IndexOutOfBoundsException e) {
