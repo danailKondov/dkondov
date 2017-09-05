@@ -85,6 +85,48 @@ class Tree<E extends Comparable<E>> implements SimpleTree<E> {
     }
 
     /**
+     * Tests if tree is binary.
+     *
+     * @return true if tree is binary
+     */
+    public boolean isBinary() {
+        // рекурсивное решение
+//        return isBinary(container);
+
+        // решение с использованием цикла и очереди
+        Queue<Node<E>> queue = new ArrayDeque<>();
+        queue.add(container);
+        while (queue.size() != 0) {
+            Node<E> x = queue.remove();
+            if(x.children.size() > 2) {
+                return false;
+            }
+            queue.addAll(x.children);
+        }
+        return true;
+    }
+
+    /**
+     * Tests if tree is binary.
+     *
+     * @param node to test
+     * @return true if tree is binary
+     */
+    private boolean isBinary(Node<E> node) {
+        if(node.children.size() > 2) {   // проверяем на бинарность
+            return false;
+        }
+        if (node.children.size() > 0) {
+            for (Node<E> childNode : node.children) { // проверяем на бинарность потомков
+                if (!isBinary(childNode)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Searches node.
      *
      * @param container where to search
