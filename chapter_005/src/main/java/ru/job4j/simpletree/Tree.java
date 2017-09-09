@@ -85,6 +85,52 @@ class Tree<E extends Comparable<E>> implements SimpleTree<E> {
     }
 
     /**
+     * Adds new element to binary tree.
+     *
+     * @param e new element
+     * @return true if operation successful
+     */
+    public boolean add (E e) {
+
+        // если дерево пустое, создаем вершину
+        if (container == null) {
+            container = new Node<>(e);
+            container.children.add(null); // left element
+            container.children.add(null); // right element
+            size++;
+            return true;
+        } else {
+
+            // если полное, то ищем нужную ветвь
+            Node<E> current = container;
+            Node<E> parent;
+            Node<E> nodeToAdd = new Node<>(e);
+            nodeToAdd.children.add(0, null); // left element
+            nodeToAdd.children.add(1, null); // right element
+            while(true) {
+                parent = current;
+                if(nodeComparator.compare(current, nodeToAdd) > 0) { // go left
+                    current = current.children.get(0);
+                    if (current == null) {
+                        parent.children.set(0, nodeToAdd);
+                        size++;
+                        return true;
+                    }
+                } else if (nodeComparator.compare(current, nodeToAdd) < 0) { // go right
+                    current = current.children.get(1);
+                    if (current == null) {
+                        parent.children.set(1, nodeToAdd);
+                        size++;
+                        return true;
+                    }
+                } else if (nodeComparator.compare(current, nodeToAdd) == 0) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    /**
      * Tests if tree is binary.
      *
      * @return true if tree is binary
@@ -101,7 +147,12 @@ class Tree<E extends Comparable<E>> implements SimpleTree<E> {
             if(x.children.size() > 2) {
                 return false;
             }
-            queue.addAll(x.children);
+//            queue.addAll(x.children);
+            for (Node<E> y : x.children) {
+                if (y != null) {
+                    queue.add(y);
+                }
+            }
         }
         return true;
     }
