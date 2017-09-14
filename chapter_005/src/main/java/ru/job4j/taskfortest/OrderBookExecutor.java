@@ -1,5 +1,6 @@
 package ru.job4j.taskfortest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,10 +20,36 @@ public class OrderBookExecutor {
         OrderBookParser bookParser = new OrderBookParser();
         bookParser.parse(bookParser.getXMLfile(path));
 
+//        for (OrderBook ob : bookParser.getOrderBookList()) {
+//            ob.processData();
+//            ob.print();
+//        }
+
+        // распараллеливаем обработку order book
+        ArrayList<Thread> list = new ArrayList<>();
         for (OrderBook ob : bookParser.getOrderBookList()) {
-            ob.processData();
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ob.processData();
+                }
+            });
+            list.add(thread);
+        }
+
+        // ждем, пока не закончится обработка
+        for (Thread thread : list) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (OrderBook ob : bookParser.getOrderBookList()) {
             ob.print();
         }
+
 
     }
 }

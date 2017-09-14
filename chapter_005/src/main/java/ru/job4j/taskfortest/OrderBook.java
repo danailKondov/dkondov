@@ -161,19 +161,4 @@ public class OrderBook {
     public int hashCode() {
         return orderBookName != null ? orderBookName.hashCode() : 0;
     }
-
-    // for test purposes only
-    // ================================================
-
-    public HashMap<Integer, Order> getRawOrders() {
-        return rawOrders;
-    }
-
-    public TreeMap<Double, Integer> getSell() {
-        return sell;
-    }
-
-    public TreeMap<Double, Integer> getBuy() {
-        return buy;
-    }
 }
