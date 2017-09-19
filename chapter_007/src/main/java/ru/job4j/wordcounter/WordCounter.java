@@ -1,6 +1,8 @@
 package ru.job4j.wordcounter;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Class for counting words and spaces.
@@ -14,6 +16,11 @@ public class WordCounter {
      * Text to count.
      */
     private final String source;
+
+    /**
+     * Time limit for timer.
+     */
+    private static final int TIME_LIMIT = 1000;
 
     /**
      * Working threads.
@@ -76,12 +83,10 @@ public class WordCounter {
         });
         threads.add(thread);
 
-        // timer thread
-        Runnable timer = new CounterTimer(thread, 1000);
-        Thread timerThread = new Thread(timer);
+        Timer timer = new Timer(true);
+        timer.schedule(new TimerForThread(thread), TIME_LIMIT);
 
         thread.start();
-        timerThread.start();
     }
 
     /**
@@ -110,11 +115,9 @@ public class WordCounter {
         });
         threads.add(thread);
 
-        // timer thread
-        Runnable timer = new CounterTimer(thread, 1000);
-        Thread timerThread = new Thread(timer);
+        Timer timer = new Timer(true);
+        timer.schedule(new TimerForThread(thread), TIME_LIMIT);
 
         thread.start();
-        timerThread.start();
     }
 }

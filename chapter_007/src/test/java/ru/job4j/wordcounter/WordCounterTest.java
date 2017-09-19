@@ -2,13 +2,6 @@ package ru.job4j.wordcounter;
 
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 /**
  * Class tests counting words and spaces.
  *
@@ -31,7 +24,6 @@ public class WordCounterTest {
 
         WordCounter counter = new WordCounter(source);
         counter.execute();
-
     }
 
 }
