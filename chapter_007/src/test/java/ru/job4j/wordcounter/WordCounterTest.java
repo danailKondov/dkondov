@@ -22,11 +22,15 @@ public class WordCounterTest {
      */
     @Test
     public void wordsAndSpacesCountTest() {
-        String source = "Humana ante oculos foede cum vita iaceret";
+        String source = "Dies irae, Dies illa!\n" +
+                " Solvet saeclum in favilla,\n" +
+                " Teste David cum Sybilla.\n" +
+                " Quantus tremor est futurus,\n" +
+                " Quanto Judex est venturus\n" +
+                " Cuncta stricte discussurus.\n";
 
         WordCounter counter = new WordCounter(source);
-        counter.countSpaces();
-        counter.countWords();
+        counter.execute();
 
     }
 
