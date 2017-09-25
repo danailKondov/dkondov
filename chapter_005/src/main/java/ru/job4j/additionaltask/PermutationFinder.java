@@ -1,12 +1,14 @@
 package ru.job4j.additionaltask;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class for finding permutations.
  *
- * @since 20/09/2017
- * @version 1
+ * @since 25/09/2017
+ * @version 2
  */
 public class PermutationFinder {
 
@@ -25,5 +27,53 @@ public class PermutationFinder {
         String newOne = new String(one);
         String newTwo = new String(two);
         return newOne.equals(newTwo);
+    }
+
+    /**
+     * Finds if one word is permutation of other. Realized with
+     * HashMap.
+     *
+     * @param wordOne first word
+     * @param wordTwo second word
+     * @return true if first word is permutation of second word.
+     */
+    public boolean findWithHashMap(String wordOne, String wordTwo) {
+        if (wordOne.length() != wordTwo.length()) return false;
+
+        char[] one = wordOne.toCharArray();
+        char[] two = wordTwo.toCharArray();
+
+        Map<Character, Integer> map = new HashMap<Character, Integer>();
+
+        // В map храним в ключах символы и в значениях их количество
+        for (int i = 0; i < one.length; i++) {
+            Character ch = one[i];
+            if (map.containsKey(ch)) {
+                map.put(ch, map.get(ch) + 1);
+            } else {
+                map.put(ch, 1);
+            }
+        }
+
+        // ...вычитаем из суммы символов (values) единицу если такой символ
+        // есть во втором слове. Если сумма равна 0, то убираем символ. Если
+        // символа из второго слова нет, то прекращаем сравнение и возвращаем false
+        for (int i = 0; i < two.length; i++) {
+            Character ch = two[i];
+            if(map.containsKey(ch)) {
+                int sum = 0;
+                if((sum = map.get(ch) - 1) > 0) {
+                    map.put(ch, sum);
+                } else {
+                    map.remove(ch);
+                }
+            } else {
+                return false;
+            }
+        }
+
+        // ...если символов не осталось - значит второе слово является
+        // перестановкой первого
+        return map.size() == 0;
     }
 }
