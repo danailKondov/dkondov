@@ -51,7 +51,9 @@ public class CountChar implements Runnable {
             System.out.println("symbols in text: " + count);
             System.out.println("time to count in ms: " + (end-start)/1000000.0);
         } else {
+            long end = System.nanoTime();
             System.out.println("counting was interrupted!");
+            System.out.println("time to count in ms: " + (end-start)/1000000.0);
         }
     }
 }

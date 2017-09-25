@@ -8,7 +8,7 @@ package ru.job4j.symbolcounter;
  */
 public class SymbolCounter {
 
-    private static final int TIMEOUT = 15;
+    private static final int TIMEOUT = 16;
 
     /**
      * Counts symbols in source string with limited time.

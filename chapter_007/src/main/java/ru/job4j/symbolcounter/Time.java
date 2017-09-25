@@ -1,5 +1,8 @@
 package ru.job4j.symbolcounter;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Class for timer.
  *
@@ -31,24 +34,14 @@ public class Time implements Runnable {
 
     @Override
     public void run() {
-        try {
-            long start = System.nanoTime();
-            Thread.sleep(timeout);
-            long end = System.nanoTime();
-
-            if (threadToStop.isAlive()) {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
                 threadToStop.interrupt();
-                System.out.println("Time limit is out!");
             }
+        };
 
-            double result = (end-start)/1000000.0;
-            System.out.println("timer worked in ms: " + result);
-            System.out.println("Timeout was set in ms:  " + timeout);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
+        Timer timer = new Timer();
+        timer.schedule(task, timeout);
     }
 }
