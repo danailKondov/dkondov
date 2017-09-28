@@ -76,4 +76,24 @@ public class PermutationFinder {
         // перестановкой первого
         return map.size() == 0;
     }
+
+    public boolean is(String origin, String combine) {
+        boolean rsl = false;
+        if (origin.length() == combine.length()) {
+            rsl = true;
+            Map<Character, Integer> data = new HashMap<>();
+            for (char value : origin.toCharArray()) {
+                data.put(value, data.containsKey(value) ? data.get(value) + 1 : 1);
+            }
+            for (char value : combine.toCharArray()) {
+                Integer count = data.get(value);
+                if (count == null || count < 1) {
+                    rsl = false;
+                    break;
+                }
+                data.put(value, --count);
+            }
+        }
+        return rsl;
+    }
 }

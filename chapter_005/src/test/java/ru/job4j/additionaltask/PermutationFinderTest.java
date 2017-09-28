@@ -69,7 +69,7 @@ public class PermutationFinderTest {
         System.out.println("No-hashmap test time: " + (second - first)/1000000.0 + " ms");
 
         long firstH = System.nanoTime();
-        finder.findWithHashMap("abcde", "cdabe");
+        finder.is("abcde", "cdabe");
         long secondH = System.nanoTime();
         System.out.println("With-hashmap test time: " + (secondH - firstH)/1000000.0 + " ms");
 
