@@ -1,25 +1,50 @@
 package ru.job4j.simpledynamiclist;
 
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Class simple array list.
  *
- * @since 21/08/2017
- * @version 1
+ * @since 02/10/2017
+ * @version 2
  */
+@ThreadSafe
 public class SimpleArrayList<E> implements Iterable<E> {
 
     /**
      * Contains elements.
      */
+    @GuardedBy("lock")
     private Object[] container;
 
     /**
      * Points to last element.
      */
+    @GuardedBy("lock")
     private int pointer = 0;
+
+    /**
+     * Lock for synchronization.
+     */
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    /**
+     * Lock for read.
+     */
+    private Lock readLock = lock.readLock();
+
+    /**
+     * Lock for write.
+     */
+    private Lock writeLock = lock.writeLock();
 
     /**
      * Default constructor.
@@ -33,13 +58,18 @@ public class SimpleArrayList<E> implements Iterable<E> {
      * @param value - value to add
      */
     public void add(E value) {
-        if (pointer < container.length) {
-            container[pointer++] = value;
-        } else {
-            Object[] newContainer = new Object[container.length + container.length / 2];
-            System.arraycopy(container, 0, newContainer, 0, container.length);
-            container = newContainer;
-            container[pointer++] = value;
+        writeLock.lock();
+        try {
+            if (pointer < container.length) {
+                container[pointer++] = value;
+            } else {
+                Object[] newContainer = new Object[container.length + container.length / 2];
+                System.arraycopy(container, 0, newContainer, 0, container.length);
+                container = newContainer;
+                container[pointer++] = value;
+            }
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -49,10 +79,15 @@ public class SimpleArrayList<E> implements Iterable<E> {
      * @return value
      */
     public E get(int index) {
-        if (index >= pointer) {
-            throw new IndexOutOfBoundsException();
+        readLock.lock();
+        try {
+            if (index >= pointer) {
+                throw new IndexOutOfBoundsException();
+            }
+            return (E) container[index];
+        } finally {
+            readLock.unlock();
         }
-        return (E) container[index];
     }
 
     /**
@@ -67,15 +102,25 @@ public class SimpleArrayList<E> implements Iterable<E> {
 
             @Override
             public boolean hasNext() {
-                return index != pointer;
+                readLock.lock();
+                try {
+                    return index != pointer;
+                } finally {
+                    readLock.unlock();
+                }
             }
 
             @Override
             public E next() {
-                if(index >= pointer) {
-                    throw new NoSuchElementException();
+                readLock.lock();
+                try {
+                    if(index >= pointer) {
+                        throw new NoSuchElementException();
+                    }
+                    return (E) container[index++];
+                } finally {
+                    readLock.unlock();
                 }
-                return (E) container[index++];
             }
         };
     }

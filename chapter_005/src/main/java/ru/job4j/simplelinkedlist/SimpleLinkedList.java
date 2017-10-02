@@ -1,7 +1,12 @@
 package ru.job4j.simplelinkedlist;
 
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Class simple linked list. For better use as container
@@ -10,22 +15,41 @@ import java.util.NoSuchElementException;
  * @since 22/08/2017
  * @version 2
  */
+@ThreadSafe
 public class SimpleLinkedList<E> implements Iterable<E> {
 
     /**
      * First element.
      */
+    @GuardedBy("rwl")
     private Link<E> first;
 
     /**
      * Last element.
      */
+    @GuardedBy("rwl")
     private Link<E> last;
 
     /**
      * List's size;
      */
+    @GuardedBy("rwl")
     private int size = 0;
+
+    /**
+     * Lock for synchronization.
+     */
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+
+    /**
+     * Lock for read.
+     */
+    private final Lock readLock = rwl.readLock();
+
+    /**
+     * Lock for write.
+     */
+    private final Lock writelock = rwl.writeLock();
 
     /**
      * Default constructor.
@@ -40,7 +64,12 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @return size of container
      */
     public int size() {
-        return size;
+        readLock.lock();
+        try {
+            return size;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**
@@ -48,16 +77,21 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @param e - new element
      */
     public void add(E e) {
-        if (size == 0) {
-            Link<E> newLink = new Link<E>(e);
-            first = last = newLink;
-            size++;
-        } else {
-            Link<E> newLink = new Link<E>(e);
-            last.next = newLink;
-            newLink.previous = last;
-            last = newLink;
-            size++;
+        writelock.lock();
+        try {
+            if (size == 0) {
+                Link<E> newLink = new Link<E>(e);
+                first = last = newLink;
+                size++;
+            } else {
+                Link<E> newLink = new Link<E>(e);
+                last.next = newLink;
+                newLink.previous = last;
+                last = newLink;
+                size++;
+            }
+        } finally {
+            writelock.unlock();
         }
     }
 
@@ -67,14 +101,19 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @return data stored in element
      */
     public E get(int index) {
-        if (index >=0 && index < size) {
-            Link<E> x = first;
-            for (int i = 0; i < index; i++) {
-                x = x.next;
+        writelock.lock();
+        try {
+            if (index >=0 && index < size) {
+                Link<E> x = first;
+                for (int i = 0; i < index; i++) {
+                    x = x.next;
+                }
+                return x.data;
             }
-            return x.data;
-        }
             throw new IndexOutOfBoundsException();
+        } finally {
+            writelock.unlock();
+        }
     }
 
     /**
@@ -83,20 +122,25 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @throws NoSuchElementException if no element to remove
      */
     public E remove() {
-        Link<E> result = null;
-        if(size > 1) {
-            result = last;
-            last = last.previous;
-            last.next = null;
-            size--;
-        } else if (size == 1) {
-            result = last;
-            last = first = null;
-            size--;
-        } else {
-            throw new NoSuchElementException();
+        writelock.lock();
+        try {
+            Link<E> result = null;
+            if(size > 1) {
+                result = last;
+                last = last.previous;
+                last.next = null;
+                size--;
+            } else if (size == 1) {
+                result = last;
+                last = first = null;
+                size--;
+            } else {
+                throw new NoSuchElementException();
+            }
+            return result.data;
+        } finally {
+            writelock.unlock();
         }
-        return result.data;
     }
 
     /**
@@ -107,35 +151,40 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @throws NoSuchElementException if no element to remove
      */
     public E remove(int index) {
-        Link<E> result = null;
+        writelock.lock();
+        try {
+            Link<E> result = null;
 
-        if(size == 0) throw new NoSuchElementException();
+            if(size == 0) throw new NoSuchElementException();
 
-        if (index == 0) {
-            if (size > 1) {
-                result = first;
-                first = first.next;
-                first.previous = null;
+            if (index == 0) {
+                if (size > 1) {
+                    result = first;
+                    first = first.next;
+                    first.previous = null;
+                    size--;
+                } else if (size == 1) {
+                    return remove();
+                }
+            } else if (index > 0 && index < size - 1) {
+                Link<E> x = first;
+                for (int i = 0; i < index; i++) {
+                    x = x.next;
+                }
+                result = x;
+                x.previous.next = x.next;
+                x.next.previous = x.previous;
                 size--;
-            } else if (size == 1) {
+            } else if (index == size - 1) {
                 return remove();
+            } else {
+                throw new IndexOutOfBoundsException();
             }
-        } else if (index > 0 && index < size - 1) {
-            Link<E> x = first;
-            for (int i = 0; i < index; i++) {
-                x = x.next;
-            }
-            result = x;
-            x.previous.next = x.next;
-            x.next.previous = x.previous;
-            size--;
-        } else if (index == size - 1) {
-            return remove();
-        } else {
-            throw new IndexOutOfBoundsException();
-        }
 
-        return result.data;
+            return result.data;
+        } finally {
+            writelock.unlock();
+        }
     }
 
     /**
@@ -151,23 +200,33 @@ public class SimpleLinkedList<E> implements Iterable<E> {
 
             @Override
             public boolean hasNext() {
-                return first != null && pointer != size;
+                readLock.lock();
+                try {
+                    return first != null && pointer != size;
+                } finally {
+                    readLock.unlock();
+                }
             }
 
             @Override
             public E next() {
-                if(first == null || pointer == size) {
-                    throw new NoSuchElementException();
-                }
+                readLock.lock();
+                try {
+                    if(first == null || pointer == size) {
+                        throw new NoSuchElementException();
+                    }
 
-                if (pointer == 0) {
-                    x = first;
-                    pointer++;
-                } else {
-                    x = x.next;
-                    pointer++;
+                    if (pointer == 0) {
+                        x = first;
+                        pointer++;
+                    } else {
+                        x = x.next;
+                        pointer++;
+                    }
+                    return x.data;
+                } finally {
+                    readLock.unlock();
                 }
-                return x.data;
             }
         };
     }
