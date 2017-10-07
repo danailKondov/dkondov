@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -42,8 +43,7 @@ public class ParallelSearch {
     /**
      * Contains paths to files with needed text.
      */
-    @GuardedBy("this")
-    private final List<String> results = new ArrayList<>();
+    private final Queue<String> results = new ConcurrentLinkedQueue<>();
 
     /**
      * Thread pool for search tasks.
@@ -165,7 +165,8 @@ public class ParallelSearch {
                     Matcher m = p.matcher(sb);
                     result = m.matches();
                     if (result) {
-                        addToResults(file.getPath());
+//                        addToResults(file.getPath());
+                        results.add(file.getPath());
                     }
                 }
             }
@@ -189,19 +190,19 @@ public class ParallelSearch {
         }
     }
 
-    /**
-     * Adds file path to results in thread safe mode.
-     * @param filePath to add
-     */
-    private synchronized void addToResults(String filePath) {
-        results.add(filePath);
-    }
+//    /**
+//     * Adds file path to results in thread safe mode.
+//     * @param filePath to add
+//     */
+//    private synchronized void addToResults(String filePath) {
+//        results.add(filePath);
+//    }
 
     /**
      * Returns list of results of search.
      * @return results of search
      */
-    public List<String> result() {
+    public Queue<String> result() {
 
         // ждем, пока все потоки не отработают,
         // чтобы вернуть результат
