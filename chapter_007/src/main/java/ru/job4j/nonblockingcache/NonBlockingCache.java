@@ -41,18 +41,16 @@ public class NonBlockingCache {
      */
     public void update(Task task) throws OptimisticException {
 
-//        Task result = storage.computeIfPresent(task.getiD(), new BiFunction<Integer, Task, Task>() {
-//            @Override
-//            public Task apply(Integer integer, Task oldTask) {
-//                Task result = null;
-//                if(oldTask.getVersion() + 1 == task.getVersion()) {
-//                    result = task;
-//                }
-//                return result;
-//            }
-//        });
-
-        Task result = storage.computeIfPresent(task.getiD(), (iD, oldTask) -> oldTask.getVersion() + 1 == task.getVersion()? task : null);
+        Task result = storage.computeIfPresent(task.getiD(), new BiFunction<Integer, Task, Task>() {
+            @Override
+            public Task apply(Integer integer, Task oldTask) {
+                Task result = null;
+                if(oldTask.getVersion() + 1 == task.getVersion()) {
+                    result = task;
+                }
+                return result;
+            }
+        });
 
         if (result == null) throw new OptimisticException();
     }
