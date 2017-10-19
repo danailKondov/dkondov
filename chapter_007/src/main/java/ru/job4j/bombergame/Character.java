@@ -1,5 +1,8 @@
 package ru.job4j.bombergame;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,17 +14,27 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class Character implements Runnable {
 
-    private String name;
+    protected String name;
 
-    private final Board board;
+    protected final Board board;
 
-    protected ReentrantLock position;
+    protected volatile ReentrantLock position;
 
     protected int x;
 
     protected int y;
 
-    public Character(Board board, int x, int y, String name) {
+    protected final Logger logger = LoggerFactory.getLogger("Thread " + name);
+
+    /**
+     * Constructor.
+     *
+     * @param board of the game
+     * @param y - y coordinate of initial position
+     * @param x - x coordinate of initial position
+     * @param name of the character
+     */
+    public Character(Board board, int y, int x, String name) {
         this.board = board;
         this.x = x;
         this.y = y;
@@ -42,6 +55,7 @@ public abstract class Character implements Runnable {
         int x1 = x;
         result = move(y1 += direction.getY(), x1 += direction.getX());
         if(result) {
+            logger.info("Thread " + name + " moved " + direction.toString().toLowerCase() + ": y = " + y1 + ", x = " + x1);
             System.out.println(name + " moved " + direction.toString().toLowerCase() + ": y = " + y1 + ", x = " + x1);
             y = y1;
             x = x1;
@@ -49,6 +63,14 @@ public abstract class Character implements Runnable {
         return result;
     }
 
+    /**
+     * Moves hero on the board.
+     *
+     * @param y - y
+     * @param x - x
+     * @return true if move was successful
+     * @throws InterruptedException if thread was interrupted
+     */
     protected boolean move(int y, int x) throws InterruptedException {
         boolean result = false;
         ReentrantLock oldPosition;
@@ -72,5 +94,9 @@ public abstract class Character implements Runnable {
         }
 
         return result;
+    }
+
+    public ReentrantLock getPosition() {
+        return position;
     }
 }

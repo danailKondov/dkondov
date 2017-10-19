@@ -1,5 +1,8 @@
 package ru.job4j.bombergame;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,8 +14,14 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Hero extends Character {
 
-    public Hero(Board board, int x, int y, String name) {
-        super(board, x, y, name);
+    private volatile Direction direction;
+
+    public Hero(Board board, int y, int x, String name) {
+        super(board, y, x, name);
+
+        // направление по умолчанию, пока игрок не сделал ход,
+        // вызвав setDirection()
+        direction = Direction.RIGHT;
     }
 
     @Override
@@ -22,15 +31,18 @@ public class Hero extends Character {
             position.lock();
 
             while(!Thread.currentThread().isInterrupted()) {
-
-                // выбираем случайное направление и потом, если ход успешный,
-                // засыпаем на секунду
-                boolean result = move(Direction.values()[(int)(Math.random()*4)]);
+                boolean result = move(direction);
                 if (!result) {
                     continue;
                 }
                 Thread.sleep(1000);
             }
-        } catch (InterruptedException ignored) { /*NOP*/ }
+        } catch (InterruptedException e) {
+            logger.info("Thread " + name + " was interrupted! ");
+        }
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 }
