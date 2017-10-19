@@ -6,7 +6,7 @@ package ru.job4j.nonblockingcache;
  * @since 11/10/2017
  * @version 1
  */
-public class OptimisticException extends Exception {
+public class OptimisticException extends RuntimeException {
     public OptimisticException() {
         super("Object was already modified");
     }

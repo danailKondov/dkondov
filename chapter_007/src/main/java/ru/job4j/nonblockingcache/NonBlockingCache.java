@@ -47,11 +47,11 @@ public class NonBlockingCache {
                 Task result = null;
                 if(oldTask.getVersion() + 1 == task.getVersion()) {
                     result = task;
+                } else {
+                    throw new OptimisticException();
                 }
                 return result;
             }
         });
-
-        if (result == null) throw new OptimisticException();
     }
 }
