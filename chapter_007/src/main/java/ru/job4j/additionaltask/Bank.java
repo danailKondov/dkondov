@@ -18,7 +18,7 @@ public class Bank {
     /**
      * Collection of rush hours in form of TimeDistance class, value is counter.
      */
-    private final ConcurrentHashMap<TimeDistance, Integer> rushHours = new ConcurrentHashMap<>();
+    private final HashMap<TimeDistance, Integer> rushHours = new HashMap<>();
 
     /**
      * Customers of bank.
@@ -41,26 +41,10 @@ public class Bank {
      */
     public List<TimeDistance> findRushHour() {
 
-        ExecutorService exec = Executors.newCachedThreadPool();
-
         for (Customer customer : customers) {
             long start = customer.getTimeInBank().start;
             long end = customer.getTimeInBank().end;
-
-            exec.submit(new Runnable() {
-                @Override
-                public void run() {
-                    find(start, end);
-                }
-            });
-        }
-        exec.shutdown();
-
-        // ждем окончания работы exec'a 5 минут
-        try {
-            exec.awaitTermination(5, SECONDS);
-        } catch (InterruptedException e) {
-            System.out.println("Computation was interrupted!");
+            find(start, end);
         }
 
         // ищем максимальное значение
