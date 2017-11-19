@@ -106,7 +106,17 @@ public class MenuTracker {
 		public void execute(Input input, Tracker tracker) {
 			String name = input.ask("Enter user name: ");
 			String description = input.ask("Enter description: ");
-			tracker.add(new Item(name, description, 130L));
+
+			ArrayList<String> comments = new ArrayList<>();
+			while (true) {
+				String comm = input.ask("Enter new comment or type 'exit': ");
+				if ("exit".equals(comm)) break;
+				comments.add(comm);
+			}
+
+			Item item = new Item(name, description, 130L);
+			item.setComments(comments);
+			tracker.add(item);
 		}
 	}
 
@@ -169,12 +179,26 @@ public class MenuTracker {
 		**/
 		public void execute(Input input, Tracker tracker) {
 			String id = input.ask("Enter id of edited item: ");
-			String name = input.ask("Enter new name: ");
-			String desc = input.ask("Enter new description: ");
-			long created = tracker.findByID(id).getCreated();
-			Item newItem = new Item(name, desc, created);
-			newItem.setID(id);
-			tracker.update(newItem);
+			Item item = tracker.findByID(id);
+			if (item == null) {
+				System.out.println("There is no item with this id to update");
+			} else {
+				String name = input.ask("Enter new name: ");
+				String desc = input.ask("Enter new description: ");
+
+				ArrayList<String> comments = new ArrayList<>();
+				while (true) {
+					String comm = input.ask("Enter new comment or type 'exit': ");
+					if ("exit".equals(comm)) break;
+					comments.add(comm);
+				}
+
+				long created = item.getCreated();
+				Item newItem = new Item(name, desc, created);
+				newItem.setComments(comments);
+				newItem.setID(id);
+				tracker.update(newItem);
+			}
 		}
 	}
 
@@ -205,7 +229,13 @@ public class MenuTracker {
 		**/
 		public void execute(Input input, Tracker tracker) {
 			String id = input.ask("Enter id: ");
-			tracker.delete(tracker.findByID(id));
+			Item item = tracker.findByID(id);
+			if (item != null) {
+				System.out.println("Item was deleted: " + tracker.delete(item));
+			} else {
+				System.out.println("There is no item with id = " + id);
+			}
+
 		}
 	}
 
@@ -236,7 +266,13 @@ public class MenuTracker {
 		**/
 		public void execute(Input input, Tracker tracker) {
 			String id = input.ask("Enter id: ");
-			System.out.println(tracker.findByID(id));
+			Item item = tracker.findByID(id);
+			if (item != null) {
+				System.out.println(item);
+			} else {
+				System.out.println("There is no item with id = " + id);
+			}
+
 		}
 	}
 }

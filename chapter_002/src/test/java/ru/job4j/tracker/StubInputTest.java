@@ -1,7 +1,17 @@
 package ru.job4j.tracker;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -13,12 +23,26 @@ import static org.junit.Assert.assertThat;
 **/
 public class StubInputTest {
 
+	final Logger log = LoggerFactory.getLogger("StubInputTest");
+	Connection connection = null;
+
+	@Before
+	public void initialize() {
+		Properties properties = new Properties();
+		try {
+			connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/items_db", "postgres", "pass");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	/**
 	* Method for testing add menu option ("0").
 	**/
 	@Test
 	public void testOfAddMenuOption() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		Input input = new StubInput(new String[]{"0", "test name", "desc", "6"});
 		new StartUI(input, tracker).init();
 		assertThat(tracker.findAll().get(0).getName(), is("test name"));
@@ -29,7 +53,7 @@ public class StubInputTest {
 	**/
 	@Test
 	public void testOfShowAllItemsMenuOption() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		Item one = new Item("nameOne", "descOne", 121L);
 		tracker.add(one);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -56,7 +80,7 @@ public class StubInputTest {
 	**/
 	@Test
 	public void testOfEditItemMenuOption() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		Item one = new Item("nameOne", "descOne", 121L);
 		tracker.add(one);
 		Input input = new StubInput(new String[]{"2", one.getID(), "new name", "new desc", "6"});
@@ -69,7 +93,7 @@ public class StubInputTest {
 	**/
 	@Test
 	public void testOfDeleteItemMenuOption() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		Item one = new Item("nameOne", "descOne", 121L);
 		tracker.add(one);
 		Input input = new StubInput(new String[]{"3", one.getID(), "6"});
@@ -83,7 +107,7 @@ public class StubInputTest {
 	**/
 	@Test
 	public void testOfFindItemMenuOption() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		tracker.add(new Item("test1", "testDescription", 123L));
 		tracker.add(new Item("test2", "testDescription2", 124L));
 		tracker.add(new Item("test3", "testDescription3", 125L));
@@ -113,7 +137,7 @@ public class StubInputTest {
 	**/
 	@Test
 	public void testOfFindByNameMenuOption() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		tracker.add(new Item("test1", "testDescription", 123L));
 		tracker.add(new Item("test2", "testDescription2", 124L));
 		tracker.add(new Item("test3", "testDescription3", 125L));

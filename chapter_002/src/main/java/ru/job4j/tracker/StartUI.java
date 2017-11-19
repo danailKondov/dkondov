@@ -1,12 +1,25 @@
 package ru.job4j.tracker;
 
 
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
 * Class is start point with main method.
-* @since 29/07/2017
-* @version 1
+* @since 13/11/2017
+* @version 2
 */
 public class StartUI {
 
@@ -42,9 +55,29 @@ public class StartUI {
 	* Main method.
 	**/
 	public static void main(String[] args) {
-		Input consoleInput = new ValidateInput();
-		Tracker tracker = new Tracker();
-		new StartUI(consoleInput, tracker).init();
+
+		String log4jConfPath = "chapter_002\\src\\main\\resourses\\log4j.properties";
+		PropertyConfigurator.configure(log4jConfPath);
+
+		final Logger log = LoggerFactory.getLogger("Tracker");
+		Properties properties = new Properties();
+		Connection connection = null;
+		InputStream inputStream = null;
+
+		try {
+			inputStream = Files.newInputStream(Paths.get("chapter_002\\src\\main\\resourses\\database.properties"));
+			properties.load(inputStream);
+			connection = DriverManager.getConnection(properties.getProperty("url"), properties);
+			Tracker tracker = new Tracker(connection, log);
+
+			Input consoleInput = new ValidateInput();
+			new StartUI(consoleInput, tracker).init();
+
+		} catch (IOException | SQLException e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			Utils.closeQuietly(inputStream, log);
+		}
 	}
 
 	/**
@@ -62,6 +95,9 @@ public class StartUI {
 			);
 			int key = Integer.valueOf(input.ask("", menuOptions));
 			if (key == EXIT) {
+
+				// закрываем связь с базой данных перед выходом
+				Utils.closeQuietly(tracker.getConnection(), tracker.getLog());
 				break;
 			}
 			menu.select(key);

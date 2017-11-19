@@ -1,28 +1,60 @@
 package ru.job4j.tracker;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Properties;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
 * Class for testing Trecker class.
-* @since 29/07/2017
-* @version 1
+* @since 13/11/2017
+* @version 2
 **/
 public class TrackerTest {
+
+	final Logger log = LoggerFactory.getLogger("TrackerTest");
+	Connection connection = null;
+
+	@Before
+	public void initialize() {
+		Properties properties = new Properties();
+		try {
+			connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/items_db", "postgres", "pass");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	* Method for testing add and findAll operations.
 	**/
 	@Test
 	public void testAddAndFindAllOperations() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		Item item = new Item("test1", "testDescription", 123L);
+		ArrayList<String> list = new ArrayList<>();
+		list.add("comment one");
+		list.add("comment two");
+		list.add("comment three");
+		item.setComments(list);
 		tracker.add(item);
-		assertThat(tracker.findAll().get(0), is(item));
+		assertTrue(tracker.findAll().contains(item));
 	}
 
 	/**
@@ -30,14 +62,14 @@ public class TrackerTest {
 	**/
 	@Test
 	public void testUpdateAndFindByIDOperations() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		tracker.add(new Item("test1", "testDescription", 123L));
 		tracker.add(new Item("test2", "testDescription2", 124L));
 		tracker.add(new Item("test3", "testDescription3", 125L));
 		Item item = new Item("test4", "testDescription4", 126L);
 		tracker.add(item);
 		String id = item.getID();
-		Item itemUpdated = new Item("test5", "testDescription5", 127L);
+		Item itemUpdated = new Item("testUpdated", "testDescription5", 127L);
 		itemUpdated.setID(id);
 		tracker.update(itemUpdated);		
 		assertThat(tracker.findByID(id), is(itemUpdated));
@@ -48,7 +80,7 @@ public class TrackerTest {
 	**/
 	@Test
 	public void testFindByNameOperation() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		tracker.add(new Item("test1", "testDescription", 123L));
 		tracker.add(new Item("test2", "testDescription2", 124L));
 		tracker.add(new Item("test3", "testDescription3", 125L));
@@ -65,18 +97,14 @@ public class TrackerTest {
 	**/
 	@Test
 	public void testDeleteOperation() {
-		Tracker tracker = new Tracker();
+		Tracker tracker = new Tracker(connection, log);
 		tracker.add(new Item("test1", "testDescription", 123L));
 		tracker.add(new Item("test2", "testDescription2", 124L));
 		tracker.add(new Item("test3", "testDescription3", 125L));
-		Item item = new Item("test4", "testDescription4", 126L);
+		Item item = new Item("testDelete", "testDescription4", 126L);
 		tracker.add(item);
-		int numberOfItemsBefore = tracker.findAll().size();
 		tracker.delete(item);
-		int numberOfItemsAfter = tracker.findAll().size();
-		ArrayList<Item> result = tracker.findByName("test4");
-		ArrayList<Item> expected = new ArrayList<>();
-		assertThat(result, is(expected));
-		assertThat(numberOfItemsAfter, is(numberOfItemsBefore - 1));
+		ArrayList<Item> result = tracker.findAll();
+		assertFalse(result.contains(item));
 	}
 }

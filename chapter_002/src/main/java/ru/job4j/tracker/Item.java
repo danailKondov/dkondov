@@ -1,5 +1,8 @@
 package ru.job4j.tracker;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
 * Class represents Item.
 * @since 28/07/2017
@@ -30,7 +33,7 @@ public class Item {
 	/**
 	* variable represents array of comments.
 	**/
-	private String[] comments;
+	private ArrayList<String> comments;
 
 	/**
 	* Default constructor.
@@ -104,13 +107,52 @@ public class Item {
 	}
 
 	/**
+	 * Getter for comments.
+	 **/
+	public ArrayList<String> getComments() {
+		return comments;
+	}
+
+	/**
+	 * Setter for comments.
+	 **/
+	public void setComments(ArrayList<String> comments) {
+		this.comments = comments;
+	}
+
+	/**
 	* Method for item output.
 	* @return string representaion of object
 	**/
 	@Override
 	public String toString() {
-		return "id: " + id + ",  name: " + name + ", description: " + desc;
+		String comment = null;
+		if (comments != null) {
+			comment = comments.toString();
+		}
+		return "id: " + id + ",  name: " + name + ", description: " + desc + ", created: " + created + " \n" +
+				"comments: " + comment ;
 	}
 
-	// TODO: getter and setter for "comments", equals() and hashCode()?
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Item item = (Item) o;
+
+		if (getCreated() != item.getCreated()) return false;
+		if (id != null ? !id.equals(item.id) : item.id != null) return false;
+		if (getName() != null ? !getName().equals(item.getName()) : item.getName() != null) return false;
+		return desc != null ? desc.equals(item.desc) : item.desc == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+		result = 31 * result + (desc != null ? desc.hashCode() : 0);
+		result = 31 * result + (int) (getCreated() ^ (getCreated() >>> 32));
+		return result;
+	}
 }
