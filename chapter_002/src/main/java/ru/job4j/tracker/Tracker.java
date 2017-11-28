@@ -55,7 +55,7 @@ public class Tracker {
 			statement = connection.createStatement();
 			reader = new BufferedReader(
 					new InputStreamReader(
-							new FileInputStream("chapter_002\\src\\main\\resourses\\tables_init.sql")));
+							new FileInputStream("chapter_002\\src\\main\\resources\\tables_init.sql")));
 			StringBuilder sb = new StringBuilder();
 			String s;
 

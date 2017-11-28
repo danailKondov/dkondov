@@ -56,16 +56,13 @@ public class StartUI {
 	**/
 	public static void main(String[] args) {
 
-		String log4jConfPath = "chapter_002\\src\\main\\resourses\\log4j.properties";
-		PropertyConfigurator.configure(log4jConfPath);
-
 		final Logger log = LoggerFactory.getLogger("Tracker");
 		Properties properties = new Properties();
 		Connection connection = null;
 		InputStream inputStream = null;
 
 		try {
-			inputStream = Files.newInputStream(Paths.get("chapter_002\\src\\main\\resourses\\database.properties"));
+			inputStream = Files.newInputStream(Paths.get("chapter_002\\src\\main\\resources\\database.properties"));
 			properties.load(inputStream);
 			connection = DriverManager.getConnection(properties.getProperty("url"), properties);
 			Tracker tracker = new Tracker(connection, log);
