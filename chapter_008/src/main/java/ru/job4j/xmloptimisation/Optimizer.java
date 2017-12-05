@@ -6,6 +6,9 @@ import org.w3c.dom.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -13,8 +16,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 
 import javax.xml.xpath.*;
@@ -60,27 +62,10 @@ public class Optimizer {
         if (args.length > 0) {
             numN = Integer.valueOf(args[0]);
         } else {
-            numN = 1000000;
+            numN = 10;
         }
         optimizer.setNumN(numN);
-
-        long start = System.currentTimeMillis();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                optimizer.go();
-            }
-        });
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        long end = System.currentTimeMillis();
-        long timeElapsed = (end - start)/1000/60;
-        System.out.println(timeElapsed);
-        System.out.println(optimizer.getMeanValue());
+        optimizer.go();
     }
 
     public void setUrl(String url) {
@@ -105,7 +90,7 @@ public class Optimizer {
     /**
      * Initialises DB by creating table if not exists.
      */
-    public void initialiseDB() {
+    private void initialiseDB() {
         Statement stmt = null;
         try {
             connection = DriverManager.getConnection(url);
@@ -122,7 +107,7 @@ public class Optimizer {
     /**
      * Enters numbers to N to DB. Deletes all data before entering.
      */
-    public void enterNumN() {
+    private void enterNumN() {
         String ps = "INSERT INTO test (field) VALUES (?)";
         try (Statement st = connection.createStatement();
              PreparedStatement stmt = connection.prepareStatement(ps)) {
@@ -136,8 +121,14 @@ public class Optimizer {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            connection.commit();
             connection.setAutoCommit(true);
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
@@ -145,7 +136,7 @@ public class Optimizer {
     /**
      * Creates XML-file with data from DB in root folder.
      */
-    public void createXML() {
+    private void createXML() {
         Statement stmt = null;
         ResultSet rs = null;
         try {
@@ -167,36 +158,41 @@ public class Optimizer {
      * @throws SQLException
      */
     private void formXML(ResultSet rs) throws ParserConfigurationException, SQLException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-        Document document = documentBuilder.newDocument();
-
-        Element entries = document.createElement("entries");
-        document.appendChild(entries);
-
-        while(rs.next()) {
-            Element entry = document.createElement("entry");
-            entries.appendChild(entry);
-            Element field = document.createElement("field");
-            entry.appendChild(field);
-            field.appendChild(document.createTextNode(String.valueOf(rs.getInt(1))));
-        }
-
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        XMLStreamWriter sw = null;
         try {
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource domSource = new DOMSource(document);
-            StreamResult streamResult = new StreamResult(new File("1.xml"));
-            transformer.transform(domSource, streamResult);
-        } catch (TransformerException e) {
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            OutputStream out = new FileOutputStream("1.xml");
+            sw = factory.createXMLStreamWriter(out);
+            sw.writeStartDocument("UTF-8", "1.0");
+            sw.writeStartElement("entries");
+            while(rs.next()) {
+                sw.writeStartElement("entry");
+                sw.writeStartElement("field");
+                sw.writeCharacters(String.valueOf(rs.getInt(1)));
+                sw.writeEndElement();
+                sw.writeEndElement();
+            }
+            sw.writeEndElement();
+            sw.writeEndDocument();
+        } catch (XMLStreamException | FileNotFoundException e) {
             e.printStackTrace();
         }
+        finally {
+            try {
+                sw.flush();
+                sw.close();
+            } catch (XMLStreamException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
     /**
      * Transformas XML to other XML with XSLT.
      */
-    public void transformXMLWithXSLT() {
+    private void transformXMLWithXSLT() {
         StreamSource styleSource = new StreamSource(new File("testXSL2.xsl"));
         StreamSource source = new StreamSource(new File("1.xml"));
         StreamResult result = new StreamResult(new File("2.xml"));
@@ -211,7 +207,7 @@ public class Optimizer {
     /**
      * Parse second XML and compute mean value.
      */
-    public void parseXMLandComputeMeanValue() {
+    private void parseXMLandComputeMeanValue() {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = documentBuilder.parse("2.xml");
