@@ -11,6 +11,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import static org.junit.Assert.*;
 
@@ -41,19 +43,28 @@ public class ParserDAOTest {
     @Test
     public void addAndGetAllVacanciesTest() {
         ParserDAO dao = new ParserDAO(properties);
-        ArrayList<Vacancy> vacancies = new ArrayList<>();
+        BlockingQueue<Vacancy> vacancies = new ArrayBlockingQueue<Vacancy>(10);
         Vacancy vacancy1 = new Vacancy("name1", "great work 1", "6-12-2017", "7-12-2017", "link1");
         Vacancy vacancy2 = new Vacancy("name2", "great work 2", "6-12-2017", "7-12-2017", "link2");
         Vacancy vacancy3 = new Vacancy("name3", "great work 3", "7-12-2017", "8-12-2017", "link3");
-        vacancies.add(vacancy1);
-        vacancies.add(vacancy2);
-        vacancies.add(vacancy3);
-        dao.addVacanciesToDB(vacancies);
         try {
+            vacancies.put(vacancy1);
+            vacancies.put(vacancy2);
+            vacancies.put(vacancy3);
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    dao.addVacanciesToDB(vacancies);
+                }
+            });
+            thread.start();
             Thread.sleep(5000);
+            thread.interrupt();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         List<Vacancy> newVacancies = new ArrayList<>();
         newVacancies = dao.getAllVacancys();
         assertTrue(newVacancies.contains(vacancy1));

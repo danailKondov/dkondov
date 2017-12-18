@@ -133,7 +133,6 @@ public class StartUI {
      * Starts parsing process.
      */
     private void startToParse() {
-        log.info("parser started");
         properties.setProperty("lastsessiontime", dateFormat.format(new Date()));
         properties.setProperty("startedtoday", String.valueOf(startedToday));
         try (OutputStream outputStream = Files.newOutputStream(

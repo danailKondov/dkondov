@@ -7,6 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Class provides access to DB.
@@ -56,32 +57,31 @@ public class ParserDAO {
     }
 
     /**
-     * Adds vacancies to DB.
-     * @param list of vacancies
+     * Adds vacancies to DB. Will wait for vacancy to add till thread is interrupted.
+     * @param vacancies is queue of vacancies
      */
-    public void addVacanciesToDB(List<Vacancy> list) {
+    public void addVacanciesToDB(BlockingQueue<Vacancy> vacancies) {
         String stmt = "INSERT INTO vacancies (vacancy_name, vacancy, date_of_publishing, date_of_parsing, link) " +
                       "VALUES(?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(stmt)) {
-            connection.setAutoCommit(false);
-            for (Vacancy vacancy : list) {
+            while (!Thread.currentThread().isInterrupted()) {
+                Vacancy vacancy = vacancies.take();
                 statement.setString(1, vacancy.getVacancyName());
                 statement.setString(2, vacancy.getVacancyText());
                 statement.setString(3, vacancy.getDatePublishing());
                 statement.setString(4, vacancy.getDateParsing());
                 statement.setString(5, vacancy.getLink());
-                statement.addBatch();
+                statement.executeUpdate();
             }
-            statement.executeBatch();
-            connection.commit();
-            connection.setAutoCommit(true);
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                log.error(e.getMessage(), e);
-            }
             log.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            log.info("ParserDAO was interrupted and connection closed");
+            try {
+                connection.close();
+            } catch (SQLException e1) {
+                log.info(e.getMessage(), e);
+            }
         }
     }
 
