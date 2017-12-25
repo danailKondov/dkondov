@@ -76,11 +76,14 @@ public class ParserDAO {
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
         } catch (InterruptedException e) {
-            log.info("ParserDAO was interrupted and connection closed");
+            log.info("ParserDAO was interrupted/stopped");
+
+        } finally {
             try {
                 connection.close();
+                log.info("Connection was closed");
             } catch (SQLException e1) {
-                log.info(e.getMessage(), e);
+                log.info(e1.getMessage(), e1);
             }
         }
     }
