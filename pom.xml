@@ -33,6 +33,7 @@
 		<module>chapter_005</module>
 		<module>chapter_007</module>
 		<module>chapter_008</module>
+		<module>chapter_009</module>
 	</modules>
 
 	<dependencies>
@@ -81,7 +82,13 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.11.2</version>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.0</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 </project>
