@@ -1,5 +1,6 @@
 package ru.job4j.crud.model;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,13 +17,13 @@ import java.util.List;
 
 public class UserStore {
 
-    private static final Logger log = LoggerFactory.getLogger(UserStore.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserStore.class);
 
     private UserStore() {
         initialize();
     }
     /**
-     * Inner static class for singlet realisation.
+     * Inner static class for singlton realisation.
      */
     private static class UserStoreHelper {
         private static final UserStore INSTANCE = new UserStore();
@@ -45,7 +46,7 @@ public class UserStore {
                     "user_email CHARACTER VARYING (50)," +
                     "create_date TIMESTAMP)");
         } catch (SQLException e) {
-            log.error("Connection to DB failed to be created and DB is not (probably) initialized", e);
+            LOG.error("Connection to DB failed to be created and DB is not (probably) initialized", e);
         }
     }
 
@@ -71,7 +72,7 @@ public class UserStore {
                 }
             }
         } catch (SQLException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
     }
 
@@ -99,7 +100,7 @@ public class UserStore {
                 }
             }
         } catch (SQLException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
         return result;
     }
@@ -126,7 +127,7 @@ public class UserStore {
                 int res = statement.executeUpdate();
                 if (res > 0) result = true;
             } catch (SQLException e) {
-                log.error(e.getMessage(), e);
+                LOG.error(e.getMessage(), e);
             }
         }
         return result;
@@ -149,7 +150,7 @@ public class UserStore {
                     result = true;
                 }
             } catch (SQLException e) {
-                log.error(e.getMessage(), e);
+                LOG.error(e.getMessage(), e);
             }
         }
         return result;
@@ -164,7 +165,7 @@ public class UserStore {
              final PreparedStatement statement = connection.prepareStatement("DELETE FROM users")) {
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
     }
 
@@ -189,8 +190,15 @@ public class UserStore {
                 }
             }
         } catch (SQLException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
         return result;
+    }
+
+    /**
+     * Closes connection pool.
+     */
+    public void close() {
+        ((ComboPooledDataSource) Pool.getDataSource()).close();
     }
 }

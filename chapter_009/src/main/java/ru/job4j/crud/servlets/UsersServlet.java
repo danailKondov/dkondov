@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 
 public class UsersServlet extends HttpServlet{
 
-    private static final Logger log = LoggerFactory.getLogger(UsersServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UsersServlet.class);
     private final UserStore store = UserStore.getInstance();
 
     @Override
@@ -72,5 +72,13 @@ public class UsersServlet extends HttpServlet{
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String login = req.getParameter("login");
         store.delete(login);
+    }
+
+    /**
+     * Closes connection pool in the end.
+     */
+    @Override
+    public void destroy() {
+        store.close();
     }
 }

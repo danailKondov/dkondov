@@ -16,9 +16,10 @@ import java.util.Properties;
  */
 public class Pool {
 
-    private static final Logger log = LoggerFactory.getLogger(Pool.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Pool.class);
+    private static final Pool INSTANCE = new Pool();
     private final ComboPooledDataSource source;
-    private static final Pool instance = new Pool();
+
 
     private Pool() {
         source = new ComboPooledDataSource();
@@ -40,11 +41,11 @@ public class Pool {
             source.setAcquireIncrement(5);
             source.setMaxPoolSize(100);
         } catch (Exception e) {
-            log.error("Properties for DB not found", e);
+            LOG.error("Properties for DB not found", e);
         }
     }
 
     public static DataSource getDataSource() {
-        return instance.source;
+        return INSTANCE.source;
     }
 }
