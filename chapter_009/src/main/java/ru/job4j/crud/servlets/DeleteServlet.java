@@ -2,6 +2,7 @@ package ru.job4j.crud.servlets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.crud.model.User;
 import ru.job4j.crud.model.UserStore;
 
 import javax.servlet.ServletException;
@@ -9,12 +10,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Servlet for delete users.
  *
- * @since 31/01/2018
- * @version 2
+ * @since 09/02/2018
+ * @version 3
  */
 public class DeleteServlet extends HttpServlet{
 
@@ -23,13 +25,17 @@ public class DeleteServlet extends HttpServlet{
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.sendRedirect(String.format("%s/views/DeleteUser.jsp", req.getContextPath()));
+        List<User> users = store.getAllUsers();
+        req.setAttribute("users", users);
+        req.getRequestDispatcher("/WEB-INF/views/DeleteUser.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String login = req.getParameter("login");
         store.delete(login);
-        resp.sendRedirect(String.format("%s/views/DeleteUser.jsp", req.getContextPath()));
+        List<User> users = store.getAllUsers();
+        req.setAttribute("users", users);
+        req.getRequestDispatcher("/WEB-INF/views/DeleteUser.jsp").forward(req, resp);
     }
 }

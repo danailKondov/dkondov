@@ -8,6 +8,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,24 +16,23 @@
 </head>
 <body>
     <p> Enter user's login: </p>
-    <form action="<%=request.getContextPath()%>/display" method="post">
+    <form action="${pageContext.servletContext.contextPath}/display" method="post">
         Login: <input type="text" name="login">
         <input type="submit" value="Submit">
     </form>
     <br>
     <p>User to display: </p>
     <p>
-        <%-- какая-то содомия со скриплетами чтобы сделать out.write с проверкой user на null
-        интересно, есть другой способ? --%>
-        <% User user = (User) request.getAttribute("user");
-            PrintWriter writer = response.getWriter();
-            if (user != null) {%>
-            <%=user.toString()%>
-            <%} else {%>
-            no user to view
-            <%}%>
+            <c:choose>
+                <c:when test="${not empty user}">
+                    <c:out value="${user}"></c:out>
+                </c:when>
+                <c:otherwise>
+                    no user to view
+                </c:otherwise>
+            </c:choose>
     </p>
     <br>
-    <a href="<%=request.getContextPath()%>">Back to main page</a>
+    <a href="${pageContext.servletContext.contextPath}">Back to main page</a>
 </body>
 </html>

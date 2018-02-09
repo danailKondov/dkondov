@@ -16,8 +16,8 @@ import java.util.List;
 /**
  * Servlet for update user.
  *
- * @since 31/01/2018
- * @version 2
+ * @since 09/02/2018
+ * @version 3
  */
 public class UpdateServlet extends HttpServlet {
 
@@ -26,7 +26,9 @@ public class UpdateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.sendRedirect(String.format("%s/views/UpdateUser.jsp", req.getContextPath()));
+        List<User> users = store.getAllUsers();
+        req.setAttribute("users", users);
+        req.getRequestDispatcher("/WEB-INF/views/UpdateUser.jsp").forward(req, resp);
     }
 
     @Override
@@ -37,6 +39,8 @@ public class UpdateServlet extends HttpServlet {
         String email = req.getParameter("email");
         User user = new User(name, login, email);
         store.update(oldLogin, user);
-        resp.sendRedirect(String.format("%s/views/DeleteUser.jsp", req.getContextPath()));
+        List<User> users = store.getAllUsers();
+        req.setAttribute("users", users);
+        req.getRequestDispatcher("/WEB-INF/views/UpdateUser.jsp").forward(req, resp);
     }
 }
