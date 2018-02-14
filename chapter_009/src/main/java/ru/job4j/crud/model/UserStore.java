@@ -22,6 +22,7 @@ public class UserStore {
     private UserStore() {
         initialize();
     }
+
     /**
      * Inner static class for singlton realisation.
      */
@@ -44,10 +45,30 @@ public class UserStore {
                     "user_name CHARACTER VARYING (30)," +
                     "user_login CHARACTER VARYING (30)," +
                     "user_email CHARACTER VARYING (50)," +
+                    "user_password CHARACTER VARYING (50)," +
+                    "user_role CHARACTER VARYING (50)," +
                     "create_date TIMESTAMP)");
+            try (final Statement statement2 = connection.createStatement()) {
+                statement2.execute("CREATE TABLE IF NOT EXISTS roles (" +
+                        "id serial PRIMARY KEY," +
+                        "role_name CHARACTER VARYING (30))");
+            }
+            // добавляем роль "admin", которая обязательна по условию
+            addAdminRoleIfNotExists();
         } catch (SQLException e) {
             LOG.error("Connection to DB failed to be created and DB is not (probably) initialized", e);
         }
+    }
+
+    /**
+     * Adds "admin" to DB.
+     */
+    private void addAdminRoleIfNotExists() {
+        boolean adminInDB = false;
+        for (Role role : getAllRoles()) {
+            if (role.getRole().equals("admin")) adminInDB = true;
+        }
+        if (!adminInDB) addRole(new Role("admin")); // id будет добалена при внесении в БД
     }
 
     /**
@@ -57,13 +78,15 @@ public class UserStore {
     public void add (User user) {
         try (final Connection connection = Pool.getDataSource().getConnection();
              final PreparedStatement statement = connection.prepareStatement("INSERT INTO users " +
-                     "(user_name, user_login, user_email, create_date) " +
-                     "VALUES (?, ?, ?, ?)",
+                     "(user_name, user_login, user_email, user_password, user_role, create_date) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)",
                      Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getLogin());
             statement.setString(3, user.getEmail());
-            statement.setTimestamp(4, user.getCreateDate());
+            statement.setString(4, user.getPassword());
+            statement.setString(5, user.getRole());
+            statement.setTimestamp(6, user.getCreateDate());
             statement.executeUpdate();
             // получаем сгенерированный id и записываем его юзеру:
             try (ResultSet rs = statement.getGeneratedKeys()) {
@@ -85,7 +108,7 @@ public class UserStore {
         User result = null;
         try (final Connection connection = Pool.getDataSource().getConnection();
              final PreparedStatement statement = connection.prepareStatement("SELECT " +
-                     "id, user_name, user_login, user_email, create_date " +
+                     "id, user_name, user_login, user_email, user_password, user_role, create_date " +
                      "FROM users " +
                      "WHERE user_login = ?")) {
             statement.setString(1, login);
@@ -95,8 +118,10 @@ public class UserStore {
                     int id = rs.getInt(1);
                     String name = rs.getString(2);
                     String email = rs.getString(4);
-                    Timestamp createDate = rs.getTimestamp(5);
-                    result = new User (id, name, login, email, createDate);
+                    String password = rs.getString(5);
+                    String role = rs.getString(6);
+                    Timestamp createDate = rs.getTimestamp(7);
+                    result = new User (id, name, login, email, password, role, createDate);
                 }
             }
         } catch (SQLException e) {
@@ -116,14 +141,15 @@ public class UserStore {
         if (login != null && user != null) {
             try (final Connection connection = Pool.getDataSource().getConnection();
                  final PreparedStatement statement = connection.prepareStatement("UPDATE users " +
-                         "SET user_name = ?, user_login = ?, user_email = ?, create_date = ? " +
+                         "SET user_name = ?, user_login = ?, user_email = ?, user_password =?, user_role = ?, create_date = ? " +
                          "WHERE user_login = ?")) {
                 statement.setString(1, user.getName());
                 statement.setString(2, user.getLogin());
                 statement.setString(3, user.getEmail());
-                statement.setTimestamp(4, user.getCreateDate());
-                statement.setString(5, login);
-                // проверить ниже, раньше не работало:
+                statement.setString(4, user.getPassword());
+                statement.setString(5, user.getRole());
+                statement.setTimestamp(6, user.getCreateDate());
+                statement.setString(7, login);
                 int res = statement.executeUpdate();
                 if (res > 0) result = true;
             } catch (SQLException e) {
@@ -136,7 +162,7 @@ public class UserStore {
     /**
      * Deletes user from DB by login
      * @param login of user to delete
-     * @return true if
+     * @return true if delete was successful
      */
     public boolean delete (String login) {
         boolean result = false;
@@ -162,8 +188,10 @@ public class UserStore {
      */
     public void deleteAll() {
         try (final Connection connection = Pool.getDataSource().getConnection();
-             final PreparedStatement statement = connection.prepareStatement("DELETE FROM users")) {
+             final PreparedStatement statement = connection.prepareStatement("DELETE FROM users");
+             final PreparedStatement statement2 = connection.prepareStatement("DELETE FROM roles")) {
             statement.executeUpdate();
+            statement2.executeUpdate();
         } catch (SQLException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -177,7 +205,7 @@ public class UserStore {
         List<User> result = new ArrayList<>();
         try (final Connection connection = Pool.getDataSource().getConnection();
              final PreparedStatement statement = connection.prepareStatement("SELECT " +
-                     "id, user_name, user_login, user_email, create_date " +
+                     "id, user_name, user_login, user_email, user_password, user_role, create_date " +
                      "FROM users ")) {
             try (ResultSet rs = statement.executeQuery()) {
                 while (rs.next()) {
@@ -185,8 +213,90 @@ public class UserStore {
                     String name = rs.getString(2);
                     String login = rs.getString(3);
                     String email = rs.getString(4);
-                    Timestamp createDate = rs.getTimestamp(5);
-                    result.add(new User (id, name, login, email, createDate));
+                    String password = rs.getString(5);
+                    String role = rs.getString(6);
+                    Timestamp createDate = rs.getTimestamp(7);
+                    result.add(new User (id, name, login, email, password, role, createDate));
+                }
+            }
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+        }
+        return result;
+    }
+
+    /**
+     * Tests is login/password are registered.
+     * @param login to test
+     * @param password to test
+     * @return true if login and password are valid
+     */
+    public boolean loginAndPasswordIsValid(String login, String password) {
+        boolean result = false;
+        if (login != null & password != null) {
+            User user = getUser(login);
+            if (user != null && user.getPassword().equals(password)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Adds role to DB.
+     * @param role to add
+     */
+    public void addRole (Role role) {
+        try (final Connection connection = Pool.getDataSource().getConnection();
+             final PreparedStatement statement = connection.prepareStatement("INSERT INTO roles " +
+                             "(role_name) " +
+                             "VALUES (?)",
+                     Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, role.getRole());
+            statement.executeUpdate();
+            // получаем сгенерированный id и записываем его юзеру:
+            try (ResultSet rs = statement.getGeneratedKeys()) {
+                if (rs.next()) {
+                    role.setId(rs.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Deletes role from DB by name.
+     * @param roleName to delete
+     */
+    public void deleteRole(String roleName) {
+        if (roleName != null) {
+            try (final Connection connection = Pool.getDataSource().getConnection();
+                 final PreparedStatement statement = connection.prepareStatement("DELETE FROM roles " +
+                         "WHERE role_name = ?")) {
+                statement.setString(1, roleName);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * Gets all users from DB.
+     * @return list of users
+     */
+    public List<Role> getAllRoles() {
+        List<Role> result = new ArrayList<>();
+        try (final Connection connection = Pool.getDataSource().getConnection();
+             final PreparedStatement statement = connection.prepareStatement("SELECT " +
+                     "id, role_name " +
+                     "FROM roles ")) {
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt(1);
+                    String name = rs.getString(2);
+                    result.add(new Role (id, name));
                 }
             }
         } catch (SQLException e) {

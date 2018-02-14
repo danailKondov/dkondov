@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  * Class for data access test.
  *
  * @since 21/01/2018
- * @version 1
+ * @version 2
  */
 public class UserStoreTest {
 
@@ -28,7 +28,7 @@ public class UserStoreTest {
      */
     @Test
     public void addAndGetUserTest() {
-        User firstUser = new User("Ivan", "login", "email@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
         store.add(firstUser);
         User secondUser = store.getUser(firstUser.getLogin());
         assertEquals(firstUser, secondUser);
@@ -39,10 +39,10 @@ public class UserStoreTest {
      */
     @Test
     public void updateTest() {
-        User firstUser = new User("Ivan", "login", "email@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
         store.add(firstUser);
         int firstUserId = firstUser.getUserID();
-        User updatedUser = new User("Vasia", "newLogin", "newEmail@email.ru");
+        User updatedUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru");
         updatedUser.setUserID(firstUserId);
         boolean isOk = store.update("login", updatedUser);
         User result = store.getUser("newLogin");
@@ -55,8 +55,8 @@ public class UserStoreTest {
      */
     @Test
     public void getAllUsersTest() {
-        User firstUser = new User("Ivan", "login", "email@email.ru");
-        User secondUser = new User("Vasia", "newLogin", "newEmail@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
+        User secondUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru");
         store.add(firstUser);
         store.add(secondUser);
         List<User> usersList = store.getAllUsers();
@@ -69,14 +69,60 @@ public class UserStoreTest {
      */
     @Test
     public void deleteTest() {
-        User firstUser = new User("Ivan", "login", "email@email.ru");
-        User secondUser = new User("Vasia", "newLogin", "newEmail@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
+        User secondUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru");
         store.add(firstUser);
         store.add(secondUser);
         store.delete("newLogin");
         List<User> usersList = store.getAllUsers();
         assertTrue(usersList.contains(firstUser));
         assertFalse(usersList.contains(secondUser));
+    }
+
+    /**
+     * Tests method, which testing login and password.
+     */
+    @Test
+    public void passwordAndLoginTest() {
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
+        store.add(firstUser);
+        assertTrue(store.loginAndPasswordIsValid("login", "pass"));
+        assertFalse(store.loginAndPasswordIsValid("wronglogin", "pass"));
+        assertFalse(store.loginAndPasswordIsValid("login", "wrongpass"));
+        assertFalse(store.loginAndPasswordIsValid(null, "pass"));
+        assertFalse(store.loginAndPasswordIsValid("login", null));
+        assertFalse(store.loginAndPasswordIsValid(null, null));
+    }
+
+    /**
+     * Tests is admin was added to DB during initialisation.
+     */
+    @Test
+    public void adminWasAddedTest() {
+        List<Role> roles = store.getAllRoles();
+        boolean adminInDB = false;
+        for (Role role : roles) {
+            if (role.getRole().equals("admin")) adminInDB = true;
+        }
+        assertTrue(adminInDB);
+    }
+
+    /**
+     * Tests adding and getting roles.
+     */
+    @Test
+    public void addNewRoleTest() {
+        Role role = new Role("user");
+        store.addRole(role);
+        assertTrue(store.getAllRoles().contains(role));
+    }
+
+    @Test
+    public void deleteRoleTest() {
+        Role role = new Role("roleToDelete");
+        store.addRole(role);
+        store.deleteRole(role.getRole());
+        assertFalse(store.getAllRoles().contains(role));
     }
 
     @After

@@ -2,6 +2,7 @@ package ru.job4j.crud.servlets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.crud.model.Role;
 import ru.job4j.crud.model.User;
 import ru.job4j.crud.model.UserStore;
 
@@ -26,7 +27,9 @@ public class CreateServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<User> users = store.getAllUsers();
+        List<Role> roles = store.getAllRoles();
         req.setAttribute("users", users);
+        req.setAttribute("roles", roles);
         req.getRequestDispatcher("/WEB-INF/views/CreateUser.jsp").forward(req, resp);
     }
 
@@ -34,11 +37,27 @@ public class CreateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("name");
         String login = req.getParameter("login");
+        String password = req.getParameter("password");
+        String role = req.getParameter("role");
         String email = req.getParameter("email");
-        User user = new User(name, login, email);
-        store.add(user);
-        List<User> users = store.getAllUsers();
-        req.setAttribute("users", users);
-        req.getRequestDispatcher("/WEB-INF/views/CreateUser.jsp").forward(req, resp);
+
+        // test if login is already used
+        User testUser = store.getUser(login);
+        if (testUser != null) {
+            req.setAttribute("createErrorMessage", "This login is already in use!");
+            List<User> users = store.getAllUsers();
+            List<Role> roles = store.getAllRoles();
+            req.setAttribute("users", users);
+            req.setAttribute("roles", roles);
+            req.getRequestDispatcher("/WEB-INF/views/CreateUser.jsp").forward(req, resp);
+        } else {
+            User user = new User(name, login, password, role, email);
+            store.add(user);
+            List<User> users = store.getAllUsers();
+            List<Role> roles = store.getAllRoles();
+            req.setAttribute("users", users);
+            req.setAttribute("roles", roles);
+            req.getRequestDispatcher("/WEB-INF/views/CreateUser.jsp").forward(req, resp);
+        }
     }
 }

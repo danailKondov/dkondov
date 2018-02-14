@@ -5,8 +5,8 @@ import java.sql.Timestamp;
 /**
  * Class represents simple user.
  *
- * @since 17/01/2018
- * @version 1
+ * @since 13/02/2018
+ * @version 2
  */
 
 public class User {
@@ -15,20 +15,26 @@ public class User {
     private String name;
     private String login;
     private String email;
+    private String password;
+    private String role;
     private final Timestamp createDate;
 
-    public User(String name, String login, String email) {
+    public User(String name, String login, String password, String role, String email) {
         this.name = name;
         this.login = login;
         this.email = email;
+        this.password = password;
+        this.role = role;
         createDate = new Timestamp(System.currentTimeMillis());
     }
 
-    public User(int userID, String name, String login, String email, Timestamp createDate) {
+    public User(int userID, String name, String login, String email, String password, String role, Timestamp createDate) {
         this.userID = userID;
         this.name = name;
         this.login = login;
         this.email = email;
+        this.password = password;
+        this.role = role;
         this.createDate = createDate;
     }
 
@@ -66,6 +72,22 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override

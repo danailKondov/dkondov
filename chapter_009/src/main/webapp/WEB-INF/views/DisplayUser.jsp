@@ -15,6 +15,7 @@
     <title>Title</title>
 </head>
 <body>
+    <a href="${pageContext.servletContext.contextPath}/out" style="color: green">Login out</a><br/>
     <p> Enter user's login: </p>
     <form action="${pageContext.servletContext.contextPath}/display" method="post">
         Login: <input type="text" name="login">
@@ -25,7 +26,7 @@
     <p>
             <c:choose>
                 <c:when test="${not empty user}">
-                    <c:out value="${user}"></c:out>
+                    <c:out value="${user}"/>
                 </c:when>
                 <c:otherwise>
                     no user to view
