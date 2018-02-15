@@ -31,7 +31,6 @@ public class UpdateServlet extends HttpServlet {
         List<Role> roles = store.getAllRoles();
         req.setAttribute("users", users);
         req.setAttribute("roles", roles);
-//        req.setAttribute("oldLogin", req.getAttribute("oldLogin"));
         req.getRequestDispatcher("/WEB-INF/views/UpdateUser.jsp").forward(req, resp);
     }
 

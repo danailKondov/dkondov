@@ -31,10 +31,8 @@ public class SignInController extends HttpServlet {
             User user = UserStore.getInstance().getUser(login);
             String role = user.getRole();
             HttpSession session = req.getSession();
-            synchronized (session) {
-                session.setAttribute("login", login);
-                session.setAttribute("role", role);
-            }
+            session.setAttribute("login", login);
+            session.setAttribute("role", role);
             resp.sendRedirect(String.format("%s/", req.getContextPath()));
         } else {
             req.setAttribute("error", "login/password not valid!");
