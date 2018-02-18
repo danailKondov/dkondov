@@ -28,7 +28,7 @@ public class UserStoreTest {
      */
     @Test
     public void addAndGetUserTest() {
-        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru", "Moscow", "Russia");
         store.add(firstUser);
         User secondUser = store.getUser(firstUser.getLogin());
         assertEquals(firstUser, secondUser);
@@ -39,10 +39,10 @@ public class UserStoreTest {
      */
     @Test
     public void updateTest() {
-        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru", "Moscow", "Russia");
         store.add(firstUser);
         int firstUserId = firstUser.getUserID();
-        User updatedUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru");
+        User updatedUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru", "Paris", "France");
         updatedUser.setUserID(firstUserId);
         boolean isOk = store.update("login", updatedUser);
         User result = store.getUser("newLogin");
@@ -55,8 +55,8 @@ public class UserStoreTest {
      */
     @Test
     public void getAllUsersTest() {
-        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
-        User secondUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru", "Moscow", "Russia");
+        User secondUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru", "Paris", "France");
         store.add(firstUser);
         store.add(secondUser);
         List<User> usersList = store.getAllUsers();
@@ -69,8 +69,8 @@ public class UserStoreTest {
      */
     @Test
     public void deleteTest() {
-        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
-        User secondUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru", "Moscow", "Russia");
+        User secondUser = new User("Vasia", "newLogin", "newPass", "user", "newEmail@email.ru", "Paris", "France");
         store.add(firstUser);
         store.add(secondUser);
         store.delete("newLogin");
@@ -84,7 +84,7 @@ public class UserStoreTest {
      */
     @Test
     public void passwordAndLoginTest() {
-        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru");
+        User firstUser = new User("Ivan", "login", "pass", "admin", "email@email.ru", "Moscow", "Russia");
         store.add(firstUser);
         assertTrue(store.loginAndPasswordIsValid("login", "pass"));
         assertFalse(store.loginAndPasswordIsValid("wronglogin", "pass"));

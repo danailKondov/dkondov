@@ -10,38 +10,56 @@
 <html>
 <head>
     <title>Users database</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        html {
+            height: 100%;
+        }
+        body {
+            margin: 0; /* Убираем отступы */
+            height: 100%; /* Высота страницы */
+            background-image: url("${pageContext.servletContext.contextPath}/resources/images/uzor-2.jpg");
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        h1 {
+            margin-left: 100px;
+        }
+        a {
+            background-color: white;
+        }
+        #btn_gp {
+            margin-left: 100px;
+        }
+        .log {
+            margin-left: 100px;
+            width: auto;
+        }
+    </style>
 </head>
 <body>
     <h1> Users database </h1><br>
     <c:choose>
         <c:when test="${empty sessionScope.login}">
-            <p>
-                <a href="${pageContext.servletContext.contextPath}/sign" style="color: red">Login to continue!</a>
-            </p><br/>
+            <div class="log">
+                <a href="${pageContext.servletContext.contextPath}/sign" class="btn btn-default" role="button" style="color: red">Login to continue!</a>
+            </div><br/>
         </c:when>
         <c:otherwise>
-            <p>
-                <a href="${pageContext.servletContext.contextPath}/out" style="color: green">Login out</a>
-            </p><br/>
+            <div class="log">
+                <a href="${pageContext.servletContext.contextPath}/out" class="btn btn-default" role="button" style="color: green">Login out</a>
+            </div><br/>
         </c:otherwise>
     </c:choose>
-    <p>Here you can manage users in database:</p>
-    <ol>
-        <li>
-            <a href="${pageContext.servletContext.contextPath}/create">Add new user</a>
-        </li>
-        <li>
-            <a href="${pageContext.servletContext.contextPath}/delete">Delete user</a>
-        </li>
-        <li>
-            <a href="${pageContext.servletContext.contextPath}/update">Update user</a>
-        </li>
-        <li>
-            <a href="${pageContext.servletContext.contextPath}/display">See user's info (by login)</a>
-        </li>
-        <li>
-            <a href="${pageContext.servletContext.contextPath}/role">Edit roles</a>
-        </li>
-    </ol>
+    <p style="margin-left: 100px">Here you can manage users in database:</p>
+    <div id="btn_gp" class="btn-group-vertical">
+        <a href="${pageContext.servletContext.contextPath}/create" class="btn btn-default" role="button">Add new user</a>
+        <a href="${pageContext.servletContext.contextPath}/delete" class="btn btn-default" role="button">Delete user</a>
+        <a href="${pageContext.servletContext.contextPath}/update" class="btn btn-default" role="button">Update user</a>
+        <a href="${pageContext.servletContext.contextPath}/display" class="btn btn-default" role="button">See user's info (by login)</a>
+        <a href="${pageContext.servletContext.contextPath}/role" class="btn btn-default" role="button">Edit roles</a>
+    </div>
 </body>
 </html>

@@ -17,8 +17,8 @@ import static org.junit.Assert.*;
 /**
  * Class for update user servlet test.
  *
- * @since 15/02/2018
- * @version 1
+ * @since 18/02/2018
+ * @version 2
  */
 public class UpdateServletTest {
 
@@ -34,10 +34,12 @@ public class UpdateServletTest {
         Mockito.when(request.getParameter("password")).thenReturn("mockPass");
         Mockito.when(request.getParameter("role")).thenReturn("user");
         Mockito.when(request.getParameter("email")).thenReturn("mockMail@mail.com");
+        Mockito.when(request.getParameter("city")).thenReturn("Paris");
+        Mockito.when(request.getParameter("country")).thenReturn("France");
         Mockito.when(request.getParameter("oldLogin")).thenReturn("oldMockLogin");
         Mockito.when(request.getRequestDispatcher("/WEB-INF/views/UpdateUser.jsp")).thenReturn(dispatcher);
 
-        User user = new User("deleteTestName", "oldMockLogin", "deletePass", "user", "email@delete.com");
+        User user = new User("deleteTestName", "oldMockLogin", "deletePass", "user", "email@delete.com", "Moscow", "Russia");
         UserStore.getInstance().add(user);
 
         servlet.doPost(request, response);

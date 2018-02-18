@@ -29,7 +29,7 @@ public class DeleteServletTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         RequestDispatcher dispatcher = Mockito.mock(RequestDispatcher.class);
 
-        User user = new User("deleteTestName", "deleteTestLogin", "deletePass", "user", "email@delete.com");
+        User user = new User("deleteTestName", "deleteTestLogin", "deletePass", "user", "email@delete.com", "Moscow", "Russia");
         UserStore.getInstance().add(user);
 
         Mockito.when(request.getParameter("login")).thenReturn("deleteTestLogin");

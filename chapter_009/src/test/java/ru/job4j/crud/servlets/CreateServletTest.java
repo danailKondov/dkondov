@@ -36,6 +36,8 @@ public class CreateServletTest {
         Mockito.when(request.getParameter("login")).thenReturn("mockLogin");
         Mockito.when(request.getParameter("password")).thenReturn("mockPass");
         Mockito.when(request.getParameter("role")).thenReturn("user");
+        Mockito.when(request.getParameter("city")).thenReturn("Moscow");
+        Mockito.when(request.getParameter("country")).thenReturn("Russia");
         Mockito.when(request.getParameter("email")).thenReturn("mockMail@mail.com");
         Mockito.when(request.getRequestDispatcher("/WEB-INF/views/CreateUser.jsp")).thenReturn(dispatcher);
 

@@ -13,13 +13,45 @@
 <html>
 <head>
     <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        html {
+            height: 100%;
+        }
+        body {
+            margin: 0; /* Убираем отступы */
+            height: 100%; /* Высота страницы */
+            background-image: url("${pageContext.servletContext.contextPath}/resources/images/uzor-8.jpg");
+            background-repeat: no-repeat;
+            background-size: cover; /*растягиваем*/
+        }
+        h1, h2 {
+            margin-left: 100px;
+            color: whitesmoke;
+        }
+        a {
+            margin-left: 100px;
+            background-color: white;
+        }
+        p {
+            margin-left: 100px;
+            color: white;
+            width: 300px;
+        }
+        #add-01 {
+            width: 300px;
+            margin-left: 100px;
+        }
+    </style>
 </head>
 <body>
-    <a href="${pageContext.servletContext.contextPath}/out" style="color: green">Login out</a><br/>
+    <a href="${pageContext.servletContext.contextPath}/out" style="color: green" class="btn btn-default" role="button">Login out</a><br/>
     <p> Enter user's login: </p>
-    <form action="${pageContext.servletContext.contextPath}/display" method="post">
-        Login: <input type="text" name="login">
-        <input type="submit" value="Submit">
+    <form id="add-01" class="form-horizontal" action="${pageContext.servletContext.contextPath}/display" method="post">
+        <input class="form-control" type="text" name="login" placeholder="Login">
+        <input type="submit" value="Submit" class="btn btn-default">
     </form>
     <br>
     <p>User to display: </p>
@@ -34,6 +66,6 @@
             </c:choose>
     </p>
     <br>
-    <a href="${pageContext.servletContext.contextPath}">Back to main page</a>
+    <a href="${pageContext.servletContext.contextPath}" class="btn btn-default" role="button">Back to main page</a>
 </body>
 </html>

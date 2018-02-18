@@ -2,6 +2,7 @@ package ru.job4j.crud.servlets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.crud.model.Country;
 import ru.job4j.crud.model.Role;
 import ru.job4j.crud.model.User;
 import ru.job4j.crud.model.UserStore;
@@ -27,11 +28,17 @@ public class UpdateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        addAllAttributesTo(req);
+        req.getRequestDispatcher("/WEB-INF/views/UpdateUser.jsp").forward(req, resp);
+    }
+
+    private void addAllAttributesTo(HttpServletRequest req) {
         List<User> users = store.getAllUsers();
         List<Role> roles = store.getAllRoles();
+        List<Country> countries = store.getAllCountries();
         req.setAttribute("users", users);
         req.setAttribute("roles", roles);
-        req.getRequestDispatcher("/WEB-INF/views/UpdateUser.jsp").forward(req, resp);
+        req.setAttribute("countries", countries);
     }
 
     @Override
@@ -42,12 +49,12 @@ public class UpdateServlet extends HttpServlet {
         String password = req.getParameter("password");
         String role = req.getParameter("role");
         String email = req.getParameter("email");
-        User user = new User(name, login, password, role, email);
+        String city = req.getParameter("city");
+        String country = req.getParameter("country");
+
+        User user = new User(name, login, password, role, email, city, country);
         store.update(oldLogin, user);
-        List<User> users = store.getAllUsers();
-        List<Role> roles = store.getAllRoles();
-        req.setAttribute("users", users);
-        req.setAttribute("roles", roles);
+        addAllAttributesTo(req);
         req.getRequestDispatcher("/WEB-INF/views/UpdateUser.jsp").forward(req, resp);
     }
 }

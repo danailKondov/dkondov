@@ -5,8 +5,8 @@ import java.sql.Timestamp;
 /**
  * Class represents simple user.
  *
- * @since 13/02/2018
- * @version 2
+ * @since 18/02/2018
+ * @version 3
  */
 
 public class User {
@@ -17,24 +17,30 @@ public class User {
     private String email;
     private String password;
     private String role;
+    private String city;
+    private String country;
     private final Timestamp createDate;
 
-    public User(String name, String login, String password, String role, String email) {
+    public User(String name, String login, String password, String role, String email, String city, String country) {
         this.name = name;
         this.login = login;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.city = city;
+        this.country = country;
         createDate = new Timestamp(System.currentTimeMillis());
     }
 
-    public User(int userID, String name, String login, String email, String password, String role, Timestamp createDate) {
+    public User(int userID, String name, String login, String email, String password, String role, String city, String country, Timestamp createDate) {
         this.userID = userID;
         this.name = name;
         this.login = login;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.city = city;
+        this.country = country;
         this.createDate = createDate;
     }
 
@@ -88,6 +94,22 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     @Override

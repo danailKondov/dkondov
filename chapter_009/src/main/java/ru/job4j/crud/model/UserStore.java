@@ -40,24 +40,71 @@ public class UserStore {
     private void initialize() {
         try (final Connection connection = Pool.getDataSource().getConnection();
              final Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS users (" +
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS users (" +
                     "id serial PRIMARY KEY," +
                     "user_name CHARACTER VARYING (30)," +
                     "user_login CHARACTER VARYING (30)," +
                     "user_email CHARACTER VARYING (50)," +
                     "user_password CHARACTER VARYING (50)," +
                     "user_role CHARACTER VARYING (50)," +
+                    "user_city CHARACTER VARYING (50)," +
+                    "user_country CHARACTER VARYING (50)," +
                     "create_date TIMESTAMP)");
-            try (final Statement statement2 = connection.createStatement()) {
-                statement2.execute("CREATE TABLE IF NOT EXISTS roles (" +
-                        "id serial PRIMARY KEY," +
-                        "role_name CHARACTER VARYING (30))");
-            }
+
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS roles (" +
+                    "id serial PRIMARY KEY," +
+                    "role_name CHARACTER VARYING (30))");
+
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS cities (" +
+                    "id serial PRIMARY KEY," +
+                    "city_name CHARACTER VARYING (30)," +
+                    "country_name CHARACTER VARYING (30))");
+
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS countries (" +
+                    "id serial PRIMARY KEY," +
+                    "country_name CHARACTER VARYING (30))");
+
             // добавляем роль "admin", которая обязательна по условию
+            // и добавляем дефолтного админа, без которого невозможно что-либо делать с БД в начале работы
+            // так же добавляем города и страны, если ничего нет
             addAdminRoleIfNotExists();
+            addDefaultAdminIfNotExists();
+            addDefaultCountriesAndCitiesIfNotExists(statement);
         } catch (SQLException e) {
             LOG.error("Connection to DB failed to be created and DB is not (probably) initialized", e);
         }
+    }
+
+    private void addDefaultCountriesAndCitiesIfNotExists(Statement statement) throws SQLException {
+        if (getAllCountries().isEmpty() && getAllCities().isEmpty()) {
+            statement.executeUpdate("INSERT INTO countries (country_name) VALUES ('Russia')");
+            statement.executeUpdate("INSERT INTO countries (country_name) VALUES ('Germany')");
+            statement.executeUpdate("INSERT INTO countries (country_name) VALUES ('France')");
+            statement.executeUpdate("INSERT INTO cities (city_name, country_name) VALUES ('Paris', 'France')");
+            statement.executeUpdate("INSERT INTO cities (city_name, country_name) VALUES ('Toulouse', 'France')");
+            statement.executeUpdate("INSERT INTO cities (city_name, country_name) VALUES ('Lion', 'France')");
+            statement.executeUpdate("INSERT INTO cities (city_name, country_name) VALUES ('Moscow', 'Russia')");
+            statement.executeUpdate("INSERT INTO cities (city_name, country_name) VALUES ('SPb', 'Russia')");
+            statement.executeUpdate("INSERT INTO cities (city_name, country_name) VALUES ('Vladivistok', 'Russia')");
+            statement.executeUpdate("INSERT INTO cities (city_name, country_name) VALUES ('Berlin', 'Germany')");
+            statement.executeUpdate("INSERT INTO cities (city_name, country_name) VALUES ('Frankfurt', 'Germany')");
+        }
+    }
+
+    private void addDefaultAdminIfNotExists() {
+        boolean adminInUsersTab = false;
+        for (User user : getAllUsers()) {
+            if (user.getRole().equals("admin")) adminInUsersTab = true;
+        }
+        if (!adminInUsersTab) add(new User(
+                "defaultAdmin",
+                "log",
+                "pass",
+                "admin",
+                "email@mail.com",
+                "Moscow",
+                "Russia"
+        ));
     }
 
     /**
@@ -78,15 +125,17 @@ public class UserStore {
     public void add (User user) {
         try (final Connection connection = Pool.getDataSource().getConnection();
              final PreparedStatement statement = connection.prepareStatement("INSERT INTO users " +
-                     "(user_name, user_login, user_email, user_password, user_role, create_date) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)",
+                     "(user_name, user_login, user_email, user_password, user_role, user_city, user_country, create_date) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                      Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getLogin());
             statement.setString(3, user.getEmail());
             statement.setString(4, user.getPassword());
             statement.setString(5, user.getRole());
-            statement.setTimestamp(6, user.getCreateDate());
+            statement.setString(6, user.getCity());
+            statement.setString(7, user.getCountry());
+            statement.setTimestamp(8, user.getCreateDate());
             statement.executeUpdate();
             // получаем сгенерированный id и записываем его юзеру:
             try (ResultSet rs = statement.getGeneratedKeys()) {
@@ -108,7 +157,7 @@ public class UserStore {
         User result = null;
         try (final Connection connection = Pool.getDataSource().getConnection();
              final PreparedStatement statement = connection.prepareStatement("SELECT " +
-                     "id, user_name, user_login, user_email, user_password, user_role, create_date " +
+                     "id, user_name, user_login, user_email, user_password, user_role, user_city, user_country, create_date " +
                      "FROM users " +
                      "WHERE user_login = ?")) {
             statement.setString(1, login);
@@ -120,8 +169,10 @@ public class UserStore {
                     String email = rs.getString(4);
                     String password = rs.getString(5);
                     String role = rs.getString(6);
-                    Timestamp createDate = rs.getTimestamp(7);
-                    result = new User (id, name, login, email, password, role, createDate);
+                    String city = rs.getString(7);
+                    String country = rs.getString(8);
+                    Timestamp createDate = rs.getTimestamp(9);
+                    result = new User (id, name, login, email, password, role, city, country, createDate);
                 }
             }
         } catch (SQLException e) {
@@ -141,15 +192,24 @@ public class UserStore {
         if (login != null && user != null) {
             try (final Connection connection = Pool.getDataSource().getConnection();
                  final PreparedStatement statement = connection.prepareStatement("UPDATE users " +
-                         "SET user_name = ?, user_login = ?, user_email = ?, user_password =?, user_role = ?, create_date = ? " +
+                         "SET user_name = ?, " +
+                         "user_login = ?, " +
+                         "user_email = ?, " +
+                         "user_password =?, " +
+                         "user_role = ?, " +
+                         "user_city = ?, " +
+                         "user_country = ?, " +
+                         "create_date = ? " +
                          "WHERE user_login = ?")) {
                 statement.setString(1, user.getName());
                 statement.setString(2, user.getLogin());
                 statement.setString(3, user.getEmail());
                 statement.setString(4, user.getPassword());
                 statement.setString(5, user.getRole());
-                statement.setTimestamp(6, user.getCreateDate());
-                statement.setString(7, login);
+                statement.setString(6, user.getCity());
+                statement.setString(7, user.getCountry());
+                statement.setTimestamp(8, user.getCreateDate());
+                statement.setString(9, login);
                 int res = statement.executeUpdate();
                 if (res > 0) result = true;
             } catch (SQLException e) {
@@ -188,10 +248,11 @@ public class UserStore {
      */
     public void deleteAll() {
         try (final Connection connection = Pool.getDataSource().getConnection();
-             final PreparedStatement statement = connection.prepareStatement("DELETE FROM users");
-             final PreparedStatement statement2 = connection.prepareStatement("DELETE FROM roles")) {
-            statement.executeUpdate();
-            statement2.executeUpdate();
+             final Statement statement = connection.createStatement()) {
+            statement.executeUpdate("DELETE FROM users");
+//            statement.executeUpdate("DELETE FROM roles");
+//            statement.executeUpdate("DELETE FROM cities");
+//            statement.executeUpdate("DELETE FROM countries");
         } catch (SQLException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -205,7 +266,7 @@ public class UserStore {
         List<User> result = new ArrayList<>();
         try (final Connection connection = Pool.getDataSource().getConnection();
              final PreparedStatement statement = connection.prepareStatement("SELECT " +
-                     "id, user_name, user_login, user_email, user_password, user_role, create_date " +
+                     "id, user_name, user_login, user_email, user_password, user_role, user_city, user_country, create_date " +
                      "FROM users ")) {
             try (ResultSet rs = statement.executeQuery()) {
                 while (rs.next()) {
@@ -215,8 +276,10 @@ public class UserStore {
                     String email = rs.getString(4);
                     String password = rs.getString(5);
                     String role = rs.getString(6);
-                    Timestamp createDate = rs.getTimestamp(7);
-                    result.add(new User (id, name, login, email, password, role, createDate));
+                    String city = rs.getString(7);
+                    String country = rs.getString(8);
+                    Timestamp createDate = rs.getTimestamp(9);
+                    result.add(new User (id, name, login, email, password, role, city, country, createDate));
                 }
             }
         } catch (SQLException e) {
@@ -226,7 +289,7 @@ public class UserStore {
     }
 
     /**
-     * Tests is login/password are registered.
+     * Tests if login/password are registered.
      * @param login to test
      * @param password to test
      * @return true if login and password are valid
@@ -297,6 +360,53 @@ public class UserStore {
                     int id = rs.getInt(1);
                     String name = rs.getString(2);
                     result.add(new Role (id, name));
+                }
+            }
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+        }
+        return result;
+    }
+
+    /**
+     * Gets all cities from DB.
+     * @return list of cities
+     */
+    public List<City> getAllCities() {
+        List<City> result = new ArrayList<>();
+        try (final Connection connection = Pool.getDataSource().getConnection();
+             final PreparedStatement statement = connection.prepareStatement("SELECT " +
+                     "id, city_name, country_name " +
+                     "FROM cities ")) {
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt(1);
+                    String city = rs.getString(2);
+                    String country = rs.getString(3);
+                    result.add(new City (id, city, country));
+                }
+            }
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+        }
+        return result;
+    }
+
+    /**
+     * Gets all countries from DB.
+     * @return list of countries
+     */
+    public List<Country> getAllCountries() {
+        List<Country> result = new ArrayList<>();
+        try (final Connection connection = Pool.getDataSource().getConnection();
+             final PreparedStatement statement = connection.prepareStatement("SELECT " +
+                     "id, country_name " +
+                     "FROM countries ")) {
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt(1);
+                    String name = rs.getString(2);
+                    result.add(new Country (id, name));
                 }
             }
         } catch (SQLException e) {

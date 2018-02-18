@@ -17,16 +17,15 @@ public class AuthFilter implements Filter{
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         // пропускаем запрос на аутентификацию без фильтрации и проверки
-        if (request.getRequestURI().contains("/sign")) {
+        if (request.getRequestURI().contains("/sign") || request.getRequestURI().contains("resources/images")) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             HttpSession session = request.getSession();
-            synchronized (session) {
-                if (session.getAttribute("login") == null) {
-                    response.sendRedirect(String.format("%s/sign", request.getContextPath())); // to sign in page
-                }
+            if (session.getAttribute("login") == null) {
+                response.sendRedirect(String.format("%s/sign", request.getContextPath())); // to sign in page
             }
             filterChain.doFilter(servletRequest, servletResponse);
         }
+//        filterChain.doFilter(servletRequest, servletResponse);
     }
 }

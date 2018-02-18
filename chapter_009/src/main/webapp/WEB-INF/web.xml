@@ -35,6 +35,10 @@
         <servlet-name>RoleEdit</servlet-name>
         <servlet-class>ru.job4j.crud.servlets.RoleEditController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateCities</servlet-name>
+        <servlet-class>ru.job4j.crud.servlets.UpdateCitiesController</servlet-class>
+    </servlet>
 
     <filter>
         <filter-name>SignFilter</filter-name>
@@ -72,6 +76,10 @@
     <servlet-mapping>
         <servlet-name>RoleEdit</servlet-name>
         <url-pattern>/role</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCities</servlet-name>
+        <url-pattern>/cities</url-pattern>
     </servlet-mapping>
 
     <filter-mapping>
