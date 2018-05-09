@@ -2,6 +2,7 @@ package ru.job4j.todolist.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import ru.job4j.todolist.model.TaskItem;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Dao for TaskItem entity.
@@ -37,51 +39,36 @@ public class TaskItemDao {
         return TaskItemDaoHelper.INSTANCE;
     }
 
-    public void save(TaskItem taskItem) {
-        Session session = null;
+    private <T> T tx(final Function<Session, T> command) {
+        final Session session = factory.openSession();
+        final Transaction tx = session.beginTransaction();
         try {
-            // Chapter 13 of the Hibernate community docs discusses best practice,
-            // with examples. The recommended paradigm is one unit of work per session.
-            session = factory.openSession(); // универсальный коннект к БД
-            session.beginTransaction();
-            session.save(taskItem);
-            session.getTransaction().commit();
-            LOG.info("New item was added to DB: " + taskItem.toString());
+            T t = command.apply(session);
+            tx.commit();
+            return t;
+        } catch (final Exception e) {
+            tx.rollback();
+            throw e;
         } finally {
             closeIfNotNull(session);
         }
+    }
+
+    public void save(TaskItem taskItem) {
+        tx (session -> session.save(taskItem));
+    }
+
+    public List<TaskItem> getAllItems() {
+        return tx(session -> session.createQuery("from TaskItem").list());
+    }
+
+    public void deleteAll() {
+        tx (session -> session.createQuery("delete from TaskItem").executeUpdate());
     }
 
     private void closeIfNotNull(Session session) {
         if (session != null) {
             session.close();
-        }
-    }
-
-    public List<TaskItem> getAllItems() {
-        Session session = null;
-        try {
-            session = factory.openSession();
-            session.beginTransaction(); // нужна ли транзакция при чтении?
-            List<TaskItem> list = session.createQuery("from TaskItem").list();
-            session.getTransaction().commit();
-            LOG.info("All items was fetch from DB");
-            return list;
-        } finally {
-            closeIfNotNull(session);
-        }
-    }
-
-    public void deleteAll() {
-        Session session = null;
-        try {
-            session = factory.openSession();
-            session.beginTransaction();
-            session.createQuery("delete from TaskItem").executeUpdate();
-            session.getTransaction().commit();
-            LOG.info("All items was deleted");
-        } finally {
-            closeIfNotNull(session);
         }
     }
 
