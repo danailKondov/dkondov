@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task board</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="resources/css/todostylesheet.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <h1>ToDo tasks</h1>
+        <div id=tablediv>
+            <table class="table" id="tasktable">
+                <thead>
+                    <tr>
+                        <th>Task id</th><th>Description</th><th>Date of creation</th>
+                        <th>Task was done <input type="checkbox" onchange="changeShowExecutedTasks()">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tablebody"></tbody>
+            </table>
+        </div><br/>
+    <h2>Add new task</h2>
+    <div id="add">
+        <form id="addform" class="form-horizontal" action="javascript:void(null);" onsubmit="addNewTask()">
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <input id="description" class="form-control" type="text" name="desc" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <label>Already done<input class="form-control" type="radio" name="isDone" value="true"></label>
+                    <label>Not yet<input class="form-control" type="radio" name="isDone" value="false" checked></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <input class="btn btn-default" type="submit" value="Submit">
+                </div>
+            </div>
+        </form><br/>
+    </div>
+
+    <script src="resources/js/todotaskscripts.js"></script>
+</body>
+</html>

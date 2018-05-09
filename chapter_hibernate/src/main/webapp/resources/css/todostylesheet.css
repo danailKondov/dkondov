@@ -1,0 +1,32 @@
+html {
+    height: 100%;
+}
+body {
+    margin: 0; /* Убираем отступы */
+    height: 100%; /* Высота страницы */
+    background-image: url("/resources/img/uzor.jpg");
+    background-repeat: no-repeat;
+    background-size: cover; /*растягиваем*/
+}
+h1 {
+    margin-left: 100px;
+    color: whitesmoke;
+}
+h2 {
+    margin-left: 100px;
+    color: whitesmoke;
+}
+th, td {
+    padding: 15px; /*specifies the space between the cell content and its borders*/
+    text-align: center;
+}
+#tablediv, #add {
+    margin-left: 150px;
+    margin-right: 150px;
+    background-color: white;
+    border: 5px solid;
+    border-radius: 20px;
+}
+#tasktable, #addform {
+    padding: 35px;
+}

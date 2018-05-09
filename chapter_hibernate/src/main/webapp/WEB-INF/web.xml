@@ -1,0 +1,11 @@
+<web-app>
+    <servlet>
+        <servlet-name>TaskServlet</servlet-name>
+        <servlet-class>ru.job4j.todolist.controller.TaskServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TaskServlet</servlet-name>
+        <url-pattern>/task</url-pattern>
+    </servlet-mapping>
+</web-app>
