@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping>
+    <class name="ru.job4j.autostorage.models.Gearbox" table = "gearbox">
+        <id name="id" column="id">
+            <generator class = "identity"/>
+        </id>
+        <property name="gearboxName" column="gearbox_name"/>
+    </class>
+</hibernate-mapping>
